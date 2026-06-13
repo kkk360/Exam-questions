@@ -1,0 +1,77 @@
+{
+  "name": "smart-exam-system",
+  "version": "1.0.0",
+  "description": "智能出题系统 - 教师桌面端应用",
+  "main": "./out/main/index.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "postinstall": "electron-builder install-app-deps",
+    "build:unpack": "npm run build && electron-builder --dir",
+    "build:win": "npm run build && electron-builder --win",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "antd": "^6.0.0",
+    "@ant-design/icons": "^5.5.0",
+    "zustand": "^5.0.0",
+    "katex": "^0.16.11",
+    "docx": "^9.7.0",
+    "uuid": "^11.0.0",
+    "dayjs": "^1.11.13",
+    "@dnd-kit/core": "^6.1.0",
+    "@dnd-kit/sortable": "^8.0.0",
+    "@dnd-kit/utilities": "^3.2.2"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-vite": "^2.3.0",
+    "electron-builder": "^25.1.8",
+    "vite": "^5.4.0",
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^3.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "typescript": "^5.6.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/katex": "^0.16.7",
+    "@types/uuid": "^10.0.0"
+  },
+  "build": {
+    "appId": "com.smartexam.app",
+    "productName": "智能出题系统",
+    "directories": {
+      "buildResources": "resources"
+    },
+    "files": [
+      "out/**/*",
+      "!node_modules/**/*"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "resources/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "智能出题系统",
+      "installerLanguages": ["zh_CN"],
+      "language": "2052"
+    }
+  }
+}

@@ -1,0 +1,187 @@
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import {
+  Card, Descriptions, Tag, Rate, Button, Space, App, Popconfirm, Divider, Spin
+} from 'antd'
+import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { useQuestionStore } from '../../stores/questionStore'
+import {
+  QUESTION_TYPE_LABELS, QUESTION_TYPE_COLORS, DIFFICULTY_LABELS,
+  type Question
+} from '../../types'
+import RichContent from '../../components/RichContent'
+
+const QuestionDetail: React.FC = () => {
+  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const { message } = App.useApp()
+  const { deleteQuestion } = useQuestionStore()
+  const [question, setQuestion] = useState<Question | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (id) {
+      window.electron.questions.getById(id).then((q) => {
+        setQuestion(q)
+        setLoading(false)
+      })
+    }
+  }, [id])
+
+  const handleDelete = async () => {
+    if (!id) return
+    try {
+      await deleteQuestion(id)
+      message.success('题目已删除')
+      navigate('/questions')
+    } catch {
+      message.error('删除失败')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: 100 }}>
+        <Spin size="large" />
+      </div>
+    )
+  }
+
+  if (!question) {
+    return (
+      <Card>
+        <div style={{ textAlign: 'center', padding: 50, color: '#999' }}>
+          题目不存在
+          <br />
+          <Button type="link" onClick={() => navigate('/questions')}>返回题库</Button>
+        </div>
+      </Card>
+    )
+  }
+
+  const renderCorrectAnswer = () => {
+    if (question.type === 'single_choice') {
+      return String(question.correctAnswer)
+    }
+    if (question.type === 'multiple_choice') {
+      return Array.isArray(question.correctAnswer)
+        ? question.correctAnswer.join('、')
+        : String(question.correctAnswer)
+    }
+    if (question.type === 'fill_blank') {
+      return question.blankAnswers.join(' 或 ')
+    }
+    return '（主观题，无标准答案）'
+  }
+
+  return (
+    <Card
+      title={
+        <Space>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/questions')}>
+            返回
+          </Button>
+          <span>题目详情</span>
+        </Space>
+      }
+      extra={
+        <Space>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/questions/${id}/edit`)}
+          >
+            编辑
+          </Button>
+          <Popconfirm
+            title="确认删除此题目？"
+            onConfirm={handleDelete}
+            okText="删除"
+            cancelText="取消"
+            okButtonProps={{ danger: true }}
+          >
+            <Button danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      }
+    >
+      <Descriptions column={2} bordered>
+        <Descriptions.Item label="题型">
+          <Tag color={QUESTION_TYPE_COLORS[question.type]}>
+            {QUESTION_TYPE_LABELS[question.type]}
+          </Tag>
+        </Descriptions.Item>
+        <Descriptions.Item label="学科">{question.subject || '-'}</Descriptions.Item>
+        <Descriptions.Item label="难度">
+          <Rate disabled value={question.difficulty} count={5} style={{ fontSize: 14 }} />
+          <span style={{ marginLeft: 8, color: '#888' }}>
+            {DIFFICULTY_LABELS[question.difficulty]}
+          </span>
+        </Descriptions.Item>
+        <Descriptions.Item label="默认分值">{question.score} 分</Descriptions.Item>
+        <Descriptions.Item label="章节" span={2}>{question.chapter || '-'}</Descriptions.Item>
+      </Descriptions>
+
+      <Divider titlePlacement="left">题干</Divider>
+      <div
+        style={{
+          padding: 16,
+          background: '#fafafa',
+          borderRadius: 6,
+          border: '1px solid #f0f0f0',
+          lineHeight: 1.8,
+          whiteSpace: 'pre-wrap'
+        }}
+      >
+        {question.content}
+      </div>
+
+      {/* Options for choice questions */}
+      {(question.type === 'single_choice' || question.type === 'multiple_choice') && question.options.length > 0 && (
+        <>
+          <Divider titlePlacement="left">选项</Divider>
+          <div style={{ paddingLeft: 16 }}>
+            {question.options.map((opt) => (
+              <div key={opt.label} style={{ marginBottom: 8, lineHeight: 1.8 }}>
+                <strong>{opt.label}.</strong> {opt.content}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <Divider titlePlacement="left">正确答案</Divider>
+      <div style={{ padding: '8px 16px', background: '#f6ffed', borderRadius: 6 }}>
+        {renderCorrectAnswer()}
+      </div>
+
+      {question.explanation && (
+        <>
+          <Divider titlePlacement="left">解析</Divider>
+          <div
+            style={{
+              padding: 16,
+              background: '#e6f4ff',
+              borderRadius: 6
+            }}
+          >
+            <RichContent content={question.explanation} />
+          </div>
+        </>
+      )}
+
+      {question.tags.length > 0 && (
+        <>
+          <Divider titlePlacement="left">标签</Divider>
+          <Space wrap>
+            {question.tags.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+          </Space>
+        </>
+      )}
+    </Card>
+  )
+}
+
+export default QuestionDetail

@@ -96,9 +96,16 @@ const ExamList: React.FC = () => {
               actions={[
                 <EditOutlined key="edit" onClick={() => navigate(`/exams/${exam.id}/edit`)} />,
                 <CopyOutlined key="copy" onClick={() => handleDuplicate(exam.id)} />,
-                <DeleteOutlined key="delete" onClick={() => {
-                  if (confirm('确认删除此试卷？')) handleDelete(exam.id)
-                }} />
+                <Popconfirm
+                  key="delete"
+                  title="确认删除此试卷？"
+                  onConfirm={() => handleDelete(exam.id)}
+                  okText="删除"
+                  cancelText="取消"
+                  okButtonProps={{ danger: true }}
+                >
+                  <DeleteOutlined />
+                </Popconfirm>
               ]}
             >
               <Card.Meta

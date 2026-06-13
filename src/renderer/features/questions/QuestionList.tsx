@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Table, Button, Tag, Space, Input, Select, Card, Rate, App, Popconfirm
@@ -24,10 +24,25 @@ const QuestionList: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 20
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  const debouncedFetch = useCallback((f: QuestionFilters) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      fetchQuestions(f)
+    }, 300)
+  }, [fetchQuestions])
 
   useEffect(() => {
-    fetchQuestions(filters)
-  }, [filters])
+    debouncedFetch(filters)
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [filters, debouncedFetch])
 
   const handleFilterChange = (key: keyof QuestionFilters, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value || undefined }))

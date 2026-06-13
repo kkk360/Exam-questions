@@ -129,11 +129,10 @@ const QuestionDetail: React.FC = () => {
           background: '#fafafa',
           borderRadius: 6,
           border: '1px solid #f0f0f0',
-          lineHeight: 1.8,
-          whiteSpace: 'pre-wrap'
+          lineHeight: 1.8
         }}
       >
-        {question.content}
+        <RichContent content={question.content} />
       </div>
 
       {/* Options for choice questions */}
@@ -143,7 +142,7 @@ const QuestionDetail: React.FC = () => {
           <div style={{ paddingLeft: 16 }}>
             {question.options.map((opt) => (
               <div key={opt.label} style={{ marginBottom: 8, lineHeight: 1.8 }}>
-                <strong>{opt.label}.</strong> {opt.content}
+                <strong>{opt.label}.</strong> <RichContent content={opt.content} />
               </div>
             ))}
           </div>

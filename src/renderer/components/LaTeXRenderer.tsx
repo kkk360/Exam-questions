@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import katex from 'katex'
 
 interface LaTeXRendererProps {
@@ -77,8 +77,8 @@ function renderSegment(segment: Segment): React.ReactNode {
   }
 }
 
-const LaTeXRenderer: React.FC<LaTeXRendererProps> = ({ content, style, className }) => {
-  const segments = parseContent(content)
+const LaTeXRenderer: React.FC<LaTeXRendererProps> = React.memo(({ content, style, className }) => {
+  const segments = useMemo(() => parseContent(content), [content])
 
   return (
     <span className={className} style={{ lineHeight: 1.8, ...style }}>
@@ -87,6 +87,8 @@ const LaTeXRenderer: React.FC<LaTeXRendererProps> = ({ content, style, className
       ))}
     </span>
   )
-}
+})
+
+LaTeXRenderer.displayName = 'LaTeXRenderer'
 
 export default LaTeXRenderer

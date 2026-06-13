@@ -36,22 +36,27 @@ export const useQuestionStore = create<QuestionStore>((set, get) => ({
 
   createQuestion: async (data) => {
     const question = await window.electron.questions.create(data)
-    await get().fetchQuestions()
+    set({ questions: [...get().questions, question] })
     return question
   },
 
   updateQuestion: async (id, data) => {
-    await window.electron.questions.update(id, data)
-    await get().fetchQuestions()
+    const updated = await window.electron.questions.update(id, data)
+    if (updated) {
+      set({
+        questions: get().questions.map((q) => (q.id === id ? updated : q))
+      })
+    }
   },
 
   deleteQuestion: async (id) => {
     await window.electron.questions.delete(id)
-    await get().fetchQuestions()
+    set({ questions: get().questions.filter((q) => q.id !== id) })
   },
 
   batchDelete: async (ids) => {
     await window.electron.questions.batchDelete(ids)
-    await get().fetchQuestions()
+    const idSet = new Set(ids)
+    set({ questions: get().questions.filter((q) => !idSet.has(q.id)) })
   }
 }))

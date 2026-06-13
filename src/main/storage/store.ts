@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync, copyFileSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, copyFileSync, renameSync } from 'fs'
 import { getQuestionsFilePath, getExamsFilePath, getConfigFilePath } from './paths'
 
 interface Question {
@@ -86,12 +86,9 @@ let configCache: AppConfig | null = null
 function atomicWrite(filePath: string, data: string): void {
   const tmpPath = filePath + '.tmp'
   writeFileSync(tmpPath, data, 'utf-8')
-  // Backup previous version
   if (existsSync(filePath)) {
     copyFileSync(filePath, filePath + '.bak')
   }
-  // Atomic rename
-  const { renameSync } = require('fs')
   renameSync(tmpPath, filePath)
 }
 

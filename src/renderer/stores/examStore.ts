@@ -32,22 +32,28 @@ export const useExamStore = create<ExamStore>((set, get) => ({
 
   createExam: async (data) => {
     const exam = await window.electron.exams.create(data)
-    await get().fetchExams()
+    set({ exams: [...get().exams, exam] })
     return exam
   },
 
   updateExam: async (id, data) => {
-    await window.electron.exams.update(id, data)
-    await get().fetchExams()
+    const updated = await window.electron.exams.update(id, data)
+    if (updated) {
+      set({
+        exams: get().exams.map((e) => (e.id === id ? updated : e))
+      })
+    }
   },
 
   deleteExam: async (id) => {
     await window.electron.exams.delete(id)
-    await get().fetchExams()
+    set({ exams: get().exams.filter((e) => e.id !== id) })
   },
 
   duplicateExam: async (id) => {
-    await window.electron.exams.duplicate(id)
-    await get().fetchExams()
+    const duplicated = await window.electron.exams.duplicate(id)
+    if (duplicated) {
+      set({ exams: [...get().exams, duplicated] })
+    }
   }
 }))

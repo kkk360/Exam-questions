@@ -1,8 +1,16 @@
 :root {
-  --primary-color: #1677ff;
-  --bg-color: #f5f5f5;
-  --sidebar-bg: #001529;
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --bg-color: #f8fafc;
+  --sidebar-bg: #ffffff;
   --content-padding: 24px;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --radius-lg: 12px;
+  --radius-md: 8px;
 }
 
 * {
@@ -23,9 +31,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--text-primary);
+  background: var(--bg-color);
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -36,31 +45,28 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d9d9d9;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #bfbfbf;
+  background: #94a3b8;
 }
 
-/* KaTeX display mode centering */
 .katex-display {
   margin: 8px 0;
 }
 
-/* Formula editor preview area */
 .formula-preview {
   padding: 12px 16px;
-  background: #fafafa;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   min-height: 48px;
   margin-top: 8px;
   line-height: 1.8;
 }
 
-/* Print styles */
 @media print {
   .no-print {
     display: none !important;

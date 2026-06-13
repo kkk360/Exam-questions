@@ -12,6 +12,7 @@ import { useExamStore } from '../../stores/examStore'
 import { QUESTION_TYPE_LABELS, type Section, type SectionQuestion } from '../../types'
 import FormulaEditor from '../../components/FormulaEditor/FormulaEditor'
 import RichContent from '../../components/RichContent'
+import QuestionPicker from './QuestionPicker'
 
 const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 
@@ -233,6 +234,8 @@ const ExamBuilder: React.FC = () => {
   const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [examId, setExamId] = useState(id)
+  const [pickerVisible, setPickerVisible] = useState(false)
+  const [pickerSectionId, setPickerSectionId] = useState<string | null>(null)
 
   React.useEffect(() => {
     if (id) {
@@ -272,6 +275,26 @@ const ExamBuilder: React.FC = () => {
     }
     setSections(sections.map((s) => s.id === sectionId ? { ...s, questions: [...s.questions, newQ] } : s))
     setActiveQuestionId(newQ.id)
+  }
+
+  const openPicker = (sectionId: string) => {
+    setPickerSectionId(sectionId)
+    setPickerVisible(true)
+  }
+
+  const handlePickerConfirm = async (questionIds: string[], points: number) => {
+    if (!pickerSectionId) return
+    const allQuestions = await window.electron.questions.list()
+    const picked = allQuestions.filter((q) => questionIds.includes(q.id))
+    const newQuestions: PaperQuestion[] = picked.map((q) => ({
+      id: q.id, type: q.type, content: q.content, options: q.options,
+      correctAnswer: q.correctAnswer, blankAnswers: q.blankAnswers,
+      explanation: q.explanation, score: points
+    }))
+    setSections(sections.map((s) => s.id === pickerSectionId
+      ? { ...s, questions: [...s.questions, ...newQuestions] } : s))
+    setPickerVisible(false)
+    setPickerSectionId(null)
   }
 
   const updateQuestion = (sectionId: string, qId: string, q: PaperQuestion) => {
@@ -412,6 +435,9 @@ const ExamBuilder: React.FC = () => {
                           {QUESTION_TYPE_LABELS[t]}
                         </Button>
                       ))}
+                      <Button size="small" type="primary" ghost icon={<PlusOutlined />} onClick={() => openPicker(section.id)}>
+                        从题库选择
+                      </Button>
                     </Space>
                   </div>
                 )
@@ -423,6 +449,12 @@ const ExamBuilder: React.FC = () => {
           </div>
         </div>
       </div>
+      <QuestionPicker
+        visible={pickerVisible}
+        onCancel={() => setPickerVisible(false)}
+        onConfirm={handlePickerConfirm}
+        existingIds={sections.flatMap((s) => s.questions.map((q) => q.id))}
+      />
     </div>
   )
 }

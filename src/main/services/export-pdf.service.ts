@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron'
 import { join } from 'path'
+import { readFileSync, writeFileSync } from 'fs'
 import katex from 'katex'
 import { getExamWithQuestions } from './exam.service'
 
@@ -43,7 +44,6 @@ export async function exportToPdf(examId: string, outputPath: string): Promise<b
 
   // Get KaTeX CSS content - we need to inline it for the hidden window
   const katexCssPath = require.resolve('katex/dist/katex.min.css')
-  const { readFileSync } = require('fs')
   const katexCss = readFileSync(katexCssPath, 'utf-8')
 
   // Build HTML
@@ -303,30 +303,33 @@ ${answerKeyHtml}
     webPreferences: { offscreen: true }
   })
 
-  await pdfWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`)
+  try {
+    await pdfWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`)
 
-  // Map page size - Electron doesn't support "B5" directly, use dimensions
-  const pageSizeMap: Record<string, any> = {
-    A4: 'A4',
-    B5: { width: 176000, height: 250000 }, // B5 in microns
-    Letter: 'Letter'
-  }
-
-  const pdfBuffer = await pdfWindow.webContents.printToPDF({
-    pageSize: pageSizeMap[pc.pageSize] || 'A4',
-    landscape: pc.orientation === 'landscape',
-    printBackground: true,
-    margins: {
-      top: margins.top / 25.4, // Convert mm to inches
-      right: margins.right / 25.4,
-      bottom: margins.bottom / 25.4,
-      left: margins.left / 25.4
+    // Map page size - Electron doesn't support "B5" directly, use dimensions
+    const pageSizeMap: Record<string, any> = {
+      A4: 'A4',
+      B5: { width: 176000, height: 250000 }, // B5 in microns
+      Letter: 'Letter'
     }
-  })
 
-  const { writeFileSync } = require('fs')
-  writeFileSync(outputPath, pdfBuffer)
+    const pdfBuffer = await pdfWindow.webContents.printToPDF({
+      pageSize: pageSizeMap[pc.pageSize] || 'A4',
+      landscape: pc.orientation === 'landscape',
+      printBackground: true,
+      margins: {
+        top: margins.top / 25.4, // Convert mm to inches
+        right: margins.right / 25.4,
+        bottom: margins.bottom / 25.4,
+        left: margins.left / 25.4
+      }
+    })
 
-  pdfWindow.close()
-  return true
+    writeFileSync(outputPath, pdfBuffer)
+    return true
+  } finally {
+    if (!pdfWindow.isDestroyed()) {
+      pdfWindow.destroy()
+    }
+  }
 }

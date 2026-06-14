@@ -4,6 +4,8 @@ import zhCN from 'antd/locale/zh_CN'
 import AppLayout from './components/Layout/AppLayout'
 import ExamList from './features/exam/ExamList'
 import ExamBuilder from './features/exam/ExamBuilder'
+import ExamTrash from './features/exam/ExamTrash'
+import AnswerKeyList from './features/answerKey/AnswerKeyList'
 import SettingsPage from './features/settings/SettingsPage'
 import QuestionList from './features/questions/QuestionList'
 import QuestionDetail from './features/questions/QuestionDetail'
@@ -27,7 +29,8 @@ function App(): React.ReactElement {
           borderRadiusLG: 12,
           borderRadiusSM: 6,
           fontSize: 14,
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
           colorBgContainer: '#ffffff',
           colorBgLayout: '#f4f4f5',
           colorBgElevated: '#ffffff',
@@ -39,7 +42,8 @@ function App(): React.ReactElement {
           colorFillTertiary: '#f4f4f5',
           colorFillQuaternary: '#fafafa',
           boxShadow: '0 1px 3px 0 rgb(24 24 27 / 0.05), 0 1px 2px -1px rgb(24 24 27 / 0.04)',
-          boxShadowSecondary: '0 4px 6px -1px rgb(24 24 27 / 0.06), 0 2px 4px -2px rgb(24 24 27 / 0.05)',
+          boxShadowSecondary:
+            '0 4px 6px -1px rgb(24 24 27 / 0.06), 0 2px 4px -2px rgb(24 24 27 / 0.05)'
         },
         components: {
           Button: {
@@ -49,28 +53,29 @@ function App(): React.ReactElement {
             controlHeight: 36,
             controlHeightLG: 44,
             controlHeightSM: 28,
-            primaryShadow: '0 1px 2px 0 rgb(5 150 105 / 0.2)',
+            primaryShadow: '0 1px 2px 0 rgb(5 150 105 / 0.2)'
           },
           Card: {
             borderRadiusLG: 12,
-            boxShadowTertiary: '0 1px 3px 0 rgb(24 24 27 / 0.05), 0 1px 2px -1px rgb(24 24 27 / 0.04)',
-            colorBorderSecondary: '#f0f0f1',
+            boxShadowTertiary:
+              '0 1px 3px 0 rgb(24 24 27 / 0.05), 0 1px 2px -1px rgb(24 24 27 / 0.04)',
+            colorBorderSecondary: '#f0f0f1'
           },
           Input: {
             borderRadius: 8,
             controlHeight: 36,
-            activeShadow: '0 0 0 2px rgb(5 150 105 / 0.1)',
+            activeShadow: '0 0 0 2px rgb(5 150 105 / 0.1)'
           },
           Select: {
             borderRadius: 8,
-            controlHeight: 36,
+            controlHeight: 36
           },
           Table: {
             borderRadiusLG: 12,
             headerBg: '#fafafa',
             headerColor: '#52525b',
             borderColor: '#f0f0f1',
-            rowHoverBg: '#f4f4f5',
+            rowHoverBg: '#f4f4f5'
           },
           Menu: {
             itemBorderRadius: 6,
@@ -80,21 +85,21 @@ function App(): React.ReactElement {
             itemHoverColor: '#18181b',
             itemHoverBg: '#f4f4f5',
             itemSelectedColor: '#059669',
-            itemSelectedBg: '#ecfdf5',
+            itemSelectedBg: '#ecfdf5'
           },
           Modal: {
-            borderRadiusLG: 12,
+            borderRadiusLG: 12
           },
           Popconfirm: {
-            borderRadiusLG: 10,
+            borderRadiusLG: 10
           },
           Tag: {
-            borderRadiusSM: 4,
+            borderRadiusSM: 4
           },
           Radio: {
-            borderRadiusSM: 6,
-          },
-        },
+            borderRadiusSM: 6
+          }
+        }
       }}
     >
       <AntdApp>
@@ -108,6 +113,8 @@ function App(): React.ReactElement {
               <Route path="/questions/new" element={<QuestionEditor />} />
               <Route path="/questions/:id" element={<QuestionDetail />} />
               <Route path="/questions/:id/edit" element={<QuestionEditor />} />
+              <Route path="/exam-trash" element={<ExamTrash />} />
+              <Route path="/answer-keys" element={<AnswerKeyList />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
 

@@ -3,6 +3,7 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { registerAllHandlers } from './ipc'
 import { initStore } from './storage/store'
+import { seedDemoData } from './seed-demo'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -36,6 +37,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   initStore()
+  seedDemoData()
   registerAllHandlers()
   createWindow()
 

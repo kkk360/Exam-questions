@@ -1,5 +1,10 @@
 import { readFileSync, writeFileSync, existsSync, copyFileSync, renameSync } from 'fs'
-import { getQuestionsFilePath, getExamsFilePath, getConfigFilePath } from './paths'
+import {
+  getQuestionsFilePath,
+  getExamsFilePath,
+  getConfigFilePath,
+  getAnswerKeysFilePath
+} from './paths'
 
 interface Question {
   id: string
@@ -52,6 +57,8 @@ interface ExamPaper {
   schoolName: string
   sections: Section[]
   pageConfig: PageConfig
+  deleted?: boolean
+  deletedAt?: string
   createdAt: string
   updatedAt: string
 }
@@ -115,6 +122,11 @@ export function initStore(): void {
   if (!existsSync(examsPath)) {
     atomicWrite(examsPath, JSON.stringify({ version: 1, exams: [] }))
   }
+  const answerKeysPath = getAnswerKeysFilePath()
+  if (!existsSync(answerKeysPath)) {
+    atomicWrite(answerKeysPath, JSON.stringify({ version: 1, answerKeys: [] }))
+  }
+
   if (!existsSync(configPath)) {
     atomicWrite(
       configPath,
@@ -186,6 +198,53 @@ export function saveConfig(config: AppConfig): void {
 }
 
 // Re-export types for use in services
+interface AnswerKeyItem {
+  questionIndex: number
+  type: string
+  content: string
+  answer: string
+  explanation: string
+}
+
+interface AnswerKeySection {
+  title: string
+  description: string
+  items: AnswerKeyItem[]
+}
+
+interface AnswerKey {
+  id: string
+  examId: string
+  examTitle: string
+  title: string
+  subject: string
+  sections: AnswerKeySection[]
+  createdAt: string
+  updatedAt: string
+}
+
+interface AnswerKeysData {
+  version: number
+  answerKeys: AnswerKey[]
+}
+
+let answerKeysCache: AnswerKeysData | null = null
+
+export function getAnswerKeys(): AnswerKeysData {
+  if (!answerKeysCache) {
+    answerKeysCache = readJsonFile<AnswerKeysData>(getAnswerKeysFilePath(), {
+      version: 1,
+      answerKeys: []
+    })
+  }
+  return answerKeysCache
+}
+
+export function saveAnswerKeys(data: AnswerKeysData): void {
+  answerKeysCache = data
+  atomicWrite(getAnswerKeysFilePath(), JSON.stringify(data, null, 2))
+}
+
 export type {
   Question,
   ExamPaper,
@@ -194,5 +253,8 @@ export type {
   PageConfig,
   AppConfig,
   QuestionsData,
-  ExamsData
+  ExamsData,
+  AnswerKey,
+  AnswerKeySection,
+  AnswerKeyItem
 }

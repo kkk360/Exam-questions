@@ -1,16 +1,21 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Table, Button, Tag, Space, Input, Select, Card, Rate, App, Popconfirm } from 'antd'
 import {
-  Table, Button, Tag, Space, Input, Select, Card, Rate, App, Popconfirm
-} from 'antd'
-import {
-  PlusOutlined, DeleteOutlined, EditOutlined, EyeOutlined,
-  ExportOutlined, SearchOutlined
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  ExportOutlined,
+  SearchOutlined
 } from '@ant-design/icons'
 import { useQuestionStore } from '../../stores/questionStore'
 import {
-  QUESTION_TYPE_LABELS, QUESTION_TYPE_COLORS, DIFFICULTY_LABELS,
-  type Question, type QuestionFilters
+  QUESTION_TYPE_LABELS,
+  QUESTION_TYPE_COLORS,
+  DIFFICULTY_LABELS,
+  type Question,
+  type QuestionFilters
 } from '../../types'
 
 const { Option } = Select
@@ -26,14 +31,17 @@ const QuestionList: React.FC = () => {
   const pageSize = 20
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const debouncedFetch = useCallback((f: QuestionFilters) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-    }
-    debounceTimerRef.current = setTimeout(() => {
-      fetchQuestions(f)
-    }, 300)
-  }, [fetchQuestions])
+  const debouncedFetch = useCallback(
+    (f: QuestionFilters) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+      debounceTimerRef.current = setTimeout(() => {
+        fetchQuestions(f)
+      }, 300)
+    },
+    [fetchQuestions]
+  )
 
   useEffect(() => {
     debouncedFetch(filters)
@@ -70,10 +78,9 @@ const QuestionList: React.FC = () => {
 
   const handleExport = async () => {
     try {
-      const filePath = await window.electron.export.showSaveDialog(
-        '题库导出.json',
-        [{ name: 'JSON文件', extensions: ['json'] }]
-      )
+      const filePath = await window.electron.export.showSaveDialog('题库导出.json', [
+        { name: 'JSON文件', extensions: ['json'] }
+      ])
       if (!filePath) return
       const ids = selectedRowKeys.length > 0 ? (selectedRowKeys as string[]) : undefined
       await window.electron.data.exportQuestions(filePath, ids)
@@ -126,7 +133,9 @@ const QuestionList: React.FC = () => {
       render: (tags: string[]) => (
         <Space size={[0, 4]} wrap>
           {tags.slice(0, 3).map((tag) => (
-            <Tag key={tag} style={{ margin: 0 }}>{tag}</Tag>
+            <Tag key={tag} style={{ margin: 0 }}>
+              {tag}
+            </Tag>
           ))}
           {tags.length > 3 && <Tag>+{tags.length - 3}</Tag>}
         </Space>
@@ -173,11 +182,7 @@ const QuestionList: React.FC = () => {
     <Card
       title="题库管理"
       extra={
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => navigate('/questions/new')}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/questions/new')}>
           新建题目
         </Button>
       }
@@ -191,7 +196,9 @@ const QuestionList: React.FC = () => {
           value={filters.type}
         >
           {Object.entries(QUESTION_TYPE_LABELS).map(([key, label]) => (
-            <Option key={key} value={key}>{label}</Option>
+            <Option key={key} value={key}>
+              {label}
+            </Option>
           ))}
         </Select>
         <Select
@@ -202,7 +209,9 @@ const QuestionList: React.FC = () => {
           value={filters.difficulty}
         >
           {Object.entries(DIFFICULTY_LABELS).map(([key, label]) => (
-            <Option key={key} value={Number(key)}>{label}</Option>
+            <Option key={key} value={Number(key)}>
+              {label}
+            </Option>
           ))}
         </Select>
         <Input

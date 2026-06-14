@@ -62,7 +62,11 @@ function renderSegment(segment: Segment): React.ReactNode {
       <span
         key={segment.value}
         dangerouslySetInnerHTML={{ __html: html }}
-        style={segment.type === 'display' ? { display: 'block', margin: '8px 0', textAlign: 'center' } : undefined}
+        style={
+          segment.type === 'display'
+            ? { display: 'block', margin: '8px 0', textAlign: 'center' }
+            : undefined
+        }
       />
     )
   } catch {

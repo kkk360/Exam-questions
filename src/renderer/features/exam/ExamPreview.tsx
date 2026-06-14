@@ -28,10 +28,9 @@ const ExamPreview: React.FC = () => {
   const handleExportPdf = async () => {
     if (!id) return
     try {
-      const filePath = await window.electron.export.showSaveDialog(
-        `${exam?.title || '试卷'}.pdf`,
-        [{ name: 'PDF文件', extensions: ['pdf'] }]
-      )
+      const filePath = await window.electron.export.showSaveDialog(`${exam?.title || '试卷'}.pdf`, [
+        { name: 'PDF文件', extensions: ['pdf'] }
+      ])
       if (!filePath) return
       await window.electron.export.toPdf(id, filePath)
       message.success('PDF导出成功')
@@ -56,7 +55,11 @@ const ExamPreview: React.FC = () => {
   }
 
   if (loading) {
-    return <div style={{ textAlign: 'center', padding: 100 }}><Spin size="large" /></div>
+    return (
+      <div style={{ textAlign: 'center', padding: 100 }}>
+        <Spin size="large" />
+      </div>
+    )
   }
 
   if (!exam) {
@@ -78,8 +81,12 @@ const ExamPreview: React.FC = () => {
         }
         extra={
           <Space>
-            <Button icon={<FilePdfOutlined />} onClick={handleExportPdf}>导出PDF</Button>
-            <Button icon={<FileWordOutlined />} onClick={handleExportWord}>导出Word</Button>
+            <Button icon={<FilePdfOutlined />} onClick={handleExportPdf}>
+              导出PDF
+            </Button>
+            <Button icon={<FileWordOutlined />} onClick={handleExportWord}>
+              导出Word
+            </Button>
           </Space>
         }
       >
@@ -97,11 +104,27 @@ const ExamPreview: React.FC = () => {
           }}
         >
           {/* Header */}
-          <div style={{ textAlign: 'center', borderBottom: '2px solid #18181b', paddingBottom: 20, marginBottom: 20 }}>
+          <div
+            style={{
+              textAlign: 'center',
+              borderBottom: '2px solid #18181b',
+              paddingBottom: 20,
+              marginBottom: 20
+            }}
+          >
             {exam.schoolName && (
-              <div style={{ fontSize: 14, color: '#52525b', marginBottom: 4 }}>{exam.schoolName}</div>
+              <div style={{ fontSize: 14, color: '#52525b', marginBottom: 4 }}>
+                {exam.schoolName}
+              </div>
             )}
-            <h1 style={{ fontSize: 22, fontWeight: 'bold', margin: '8px 0', fontFamily: '"SimHei", "黑体", sans-serif' }}>
+            <h1
+              style={{
+                fontSize: 22,
+                fontWeight: 'bold',
+                margin: '8px 0',
+                fontFamily: '"SimHei", "黑体", sans-serif'
+              }}
+            >
               {exam.title}
             </h1>
             {exam.subtitle && (
@@ -110,7 +133,15 @@ const ExamPreview: React.FC = () => {
             <div style={{ fontSize: 12, color: '#71717a', marginTop: 8 }}>
               考试时间：{exam.duration}分钟 | 满分：{exam.totalScore}分
             </div>
-            <div style={{ fontSize: 12, marginTop: 12, display: 'flex', justifyContent: 'center', gap: 40 }}>
+            <div
+              style={{
+                fontSize: 12,
+                marginTop: 12,
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 40
+              }}
+            >
               <span>姓名：______________</span>
               <span>班级：______________</span>
               <span>得分：______________</span>
@@ -120,16 +151,20 @@ const ExamPreview: React.FC = () => {
           {/* Sections */}
           {exam.sections.map((section) => (
             <div key={section.id} style={{ marginTop: 24 }}>
-              <h2 style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                fontFamily: '"SimHei", "黑体", sans-serif',
-                marginBottom: 4
-              }}>
+              <h2
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  fontFamily: '"SimHei", "黑体", sans-serif',
+                  marginBottom: 4
+                }}
+              >
                 {section.title}
               </h2>
               {section.description && (
-                <div style={{ fontSize: 12, color: '#71717a', marginBottom: 12 }}>{section.description}</div>
+                <div style={{ fontSize: 12, color: '#71717a', marginBottom: 12 }}>
+                  {section.description}
+                </div>
               )}
 
               {section.questions.map((sq) => {
@@ -150,38 +185,41 @@ const ExamPreview: React.FC = () => {
                     </div>
 
                     {/* Options */}
-                    {(question.type === 'single_choice' || question.type === 'multiple_choice') && question.options.length > 0 && (
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: '4px 20px',
-                        marginLeft: 28,
-                        marginTop: 6
-                      }}>
-                        {question.options.map((opt) => (
-                          <div key={opt.label} style={{ display: 'flex', gap: 4 }}>
-                            <span style={{ fontWeight: 'bold' }}>{opt.label}.</span>
-                            <RichContent content={opt.content} />
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {(question.type === 'single_choice' || question.type === 'multiple_choice') &&
+                      question.options.length > 0 && (
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            gap: '4px 20px',
+                            marginLeft: 28,
+                            marginTop: 6
+                          }}
+                        >
+                          {question.options.map((opt) => (
+                            <div key={opt.label} style={{ display: 'flex', gap: 4 }}>
+                              <span style={{ fontWeight: 'bold' }}>{opt.label}.</span>
+                              <RichContent content={opt.content} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                     {/* Answer area for fill-in-the-blank */}
                     {question.type === 'fill_blank' && (
-                      <div style={{ marginLeft: 28, marginTop: 8 }}>
-                        答：____________________
-                      </div>
+                      <div style={{ marginLeft: 28, marginTop: 8 }}>答：____________________</div>
                     )}
 
                     {/* Answer space for essay */}
                     {question.type === 'essay' && (
-                      <div style={{
-                        marginLeft: 28,
-                        marginTop: 8,
-                        minHeight: 100,
-                        border: '1px dashed #d4d4d8'
-                      }} />
+                      <div
+                        style={{
+                          marginLeft: 28,
+                          marginTop: 8,
+                          minHeight: 100,
+                          border: '1px dashed #d4d4d8'
+                        }}
+                      />
                     )}
                   </div>
                 )
@@ -207,7 +245,9 @@ const ExamPreview: React.FC = () => {
                       if (q.type === 'single_choice') {
                         answer = String(q.correctAnswer)
                       } else if (q.type === 'multiple_choice') {
-                        answer = Array.isArray(q.correctAnswer) ? q.correctAnswer.join('、') : String(q.correctAnswer)
+                        answer = Array.isArray(q.correctAnswer)
+                          ? q.correctAnswer.join('、')
+                          : String(q.correctAnswer)
                       } else if (q.type === 'fill_blank') {
                         answer = q.blankAnswers.join(' 或 ')
                       } else {

@@ -4,7 +4,9 @@ import { Layout, Menu } from 'antd'
 import {
   FileTextOutlined,
   BookOutlined,
-  SettingOutlined
+  SettingOutlined,
+  DeleteOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons'
 
 const { Sider, Content } = Layout
@@ -19,6 +21,16 @@ const menuItems = [
     key: '/questions',
     icon: <BookOutlined />,
     label: '题库管理'
+  },
+  {
+    key: '/answer-keys',
+    icon: <CheckCircleOutlined />,
+    label: '参考答案'
+  },
+  {
+    key: '/exam-trash',
+    icon: <DeleteOutlined />,
+    label: '回收站'
   },
   {
     key: '/settings',
@@ -40,7 +52,7 @@ const AppLayout: React.FC = () => {
         style={{
           background: '#ffffff',
           borderRight: '1px solid #e4e4e7',
-          boxShadow: '1px 0 2px 0 rgb(24 24 27 / 0.04)',
+          boxShadow: '1px 0 2px 0 rgb(24 24 27 / 0.04)'
         }}
       >
         <div
@@ -50,10 +62,18 @@ const AppLayout: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             borderBottom: '1px solid #e4e4e7',
-            background: '#059669',
+            background: '#059669'
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 18, color: '#ffffff', fontWeight: 600, letterSpacing: '0.3px' }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 18,
+              color: '#ffffff',
+              fontWeight: 600,
+              letterSpacing: '0.3px'
+            }}
+          >
             智能出题系统
           </h2>
         </div>
@@ -70,7 +90,7 @@ const AppLayout: React.FC = () => {
           style={{
             padding: 24,
             background: '#f4f4f5',
-            overflow: 'auto',
+            overflow: 'auto'
           }}
         >
           <Outlet />

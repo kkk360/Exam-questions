@@ -1,8 +1,12 @@
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import { getExams, saveExams, getQuestions, type ExamPaper, type Section } from '../storage/store'
 
 export function listExams(): ExamPaper[] {
-  return getExams().exams
+  return getExams().exams.filter((e) => !e.deleted)
+}
+
+export function listTrashExams(): ExamPaper[] {
+  return getExams().exams.filter((e) => e.deleted)
 }
 
 export function getExamById(id: string): ExamPaper | null {
@@ -33,7 +37,7 @@ export function createExam(data: Omit<ExamPaper, 'id' | 'createdAt' | 'updatedAt
   const now = new Date().toISOString()
   const exam: ExamPaper = {
     ...data,
-    id: uuidv4(),
+    id: randomUUID(),
     createdAt: now,
     updatedAt: now
   }
@@ -60,11 +64,41 @@ export function updateExam(id: string, data: Partial<ExamPaper>): ExamPaper | nu
 
 export function deleteExam(id: string): boolean {
   const store = getExams()
+  const exam = store.exams.find((e) => e.id === id)
+  if (!exam) return false
+  exam.deleted = true
+  exam.deletedAt = new Date().toISOString()
+  saveExams(store)
+  return true
+}
+
+export function restoreExam(id: string): ExamPaper | null {
+  const store = getExams()
+  const exam = store.exams.find((e) => e.id === id)
+  if (!exam) return null
+  delete exam.deleted
+  delete exam.deletedAt
+  exam.updatedAt = new Date().toISOString()
+  saveExams(store)
+  return exam
+}
+
+export function permanentDeleteExam(id: string): boolean {
+  const store = getExams()
   const len = store.exams.length
-  store.exams = store.exams.filter((e) => e.id !== id)
+  store.exams = store.exams.filter((e) => !(e.id === id && e.deleted))
   if (store.exams.length === len) return false
   saveExams(store)
   return true
+}
+
+export function emptyTrash(): number {
+  const store = getExams()
+  const before = store.exams.length
+  store.exams = store.exams.filter((e) => !e.deleted)
+  const deleted = before - store.exams.length
+  if (deleted > 0) saveExams(store)
+  return deleted
 }
 
 export function duplicateExam(id: string): ExamPaper | null {
@@ -74,13 +108,13 @@ export function duplicateExam(id: string): ExamPaper | null {
   const now = new Date().toISOString()
   const newSections: Section[] = original.sections.map((s) => ({
     ...s,
-    id: uuidv4(),
+    id: randomUUID(),
     questions: s.questions.map((q) => ({ ...q }))
   }))
 
   const newExam: ExamPaper = {
     ...original,
-    id: uuidv4(),
+    id: randomUUID(),
     title: original.title + ' (副本)',
     sections: newSections,
     createdAt: now,

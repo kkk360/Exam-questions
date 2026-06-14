@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Modal, Table, Input, Select, Tag, Space, InputNumber } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { useQuestionStore } from '../../stores/questionStore'
 import {
-  QUESTION_TYPE_LABELS, QUESTION_TYPE_COLORS, DIFFICULTY_LABELS,
-  type Question, type QuestionFilters
+  QUESTION_TYPE_LABELS,
+  QUESTION_TYPE_COLORS,
+  DIFFICULTY_LABELS,
+  type Question,
+  type QuestionFilters
 } from '../../types'
 
 interface QuestionPickerProps {
@@ -17,19 +20,30 @@ interface QuestionPickerProps {
 const { Option } = Select
 
 const QuestionPicker: React.FC<QuestionPickerProps> = ({
-  visible, onCancel, onConfirm, existingIds = []
+  visible,
+  onCancel,
+  onConfirm,
+  existingIds = []
 }) => {
   const { questions, loading, fetchQuestions } = useQuestionStore()
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [points, setPoints] = useState(5)
   const [filters, setFilters] = useState<QuestionFilters>({})
+  const prevVisible = useRef(visible)
+
+  useEffect(() => {
+    if (visible && !prevVisible.current) {
+      fetchQuestions(filters)
+    }
+    prevVisible.current = visible
+  }, [visible, filters])
 
   useEffect(() => {
     if (visible) {
-      fetchQuestions(filters)
-      setSelectedRowKeys([])
+      const timer = setTimeout(() => setSelectedRowKeys([]))
+      return () => clearTimeout(timer)
     }
-  }, [visible, filters])
+  }, [visible])
 
   // Filter out questions that are already in the exam
   const availableQuestions = questions.filter((q) => !existingIds.includes(q.id))
@@ -96,7 +110,9 @@ const QuestionPicker: React.FC<QuestionPickerProps> = ({
           onChange={(v) => handleFilterChange('type', v)}
         >
           {Object.entries(QUESTION_TYPE_LABELS).map(([key, label]) => (
-            <Option key={key} value={key}>{label}</Option>
+            <Option key={key} value={key}>
+              {label}
+            </Option>
           ))}
         </Select>
         <Select
@@ -106,7 +122,9 @@ const QuestionPicker: React.FC<QuestionPickerProps> = ({
           onChange={(v) => handleFilterChange('difficulty', v)}
         >
           {Object.entries(DIFFICULTY_LABELS).map(([key, label]) => (
-            <Option key={key} value={Number(key)}>{label}</Option>
+            <Option key={key} value={Number(key)}>
+              {label}
+            </Option>
           ))}
         </Select>
         <Input

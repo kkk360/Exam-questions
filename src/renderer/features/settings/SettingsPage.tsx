@@ -32,7 +32,9 @@ const SettingsPage: React.FC = () => {
       if (result.errors.length > 0) {
         message.error(`导入出错：${result.errors.join(', ')}`)
       } else {
-        message.success(`成功导入 ${result.success} 份试卷${result.skipped > 0 ? `，跳过 ${result.skipped} 份重复试卷` : ''}`)
+        message.success(
+          `成功导入 ${result.success} 份试卷${result.skipped > 0 ? `，跳过 ${result.skipped} 份重复试卷` : ''}`
+        )
       }
     } catch {
       message.error('导入失败')
@@ -41,10 +43,9 @@ const SettingsPage: React.FC = () => {
 
   const handleExportExams = async () => {
     try {
-      const filePath = await window.electron.export.showSaveDialog(
-        '试卷导出.json',
-        [{ name: 'JSON文件', extensions: ['json'] }]
-      )
+      const filePath = await window.electron.export.showSaveDialog('试卷导出.json', [
+        { name: 'JSON文件', extensions: ['json'] }
+      ])
       if (!filePath) return
       await window.electron.data.exportExams(filePath)
       message.success('试卷导出成功')
@@ -61,8 +62,10 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 800 }}>
-        <Card title="数据管理" style={{ borderRadius: 12 }}>
-        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>试卷数据</Divider>
+      <Card title="数据管理" style={{ borderRadius: 12 }}>
+        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
+          试卷数据
+        </Divider>
         <Space>
           <Button icon={<ImportOutlined />} onClick={handleImportExams}>
             导入试卷
@@ -84,8 +87,12 @@ const SettingsPage: React.FC = () => {
               value={config?.preferences.defaultSubject || undefined}
               onChange={(v) => updatePreference('defaultSubject', v)}
               options={[
-                { value: '数学' }, { value: '物理' }, { value: '化学' },
-                { value: '生物' }, { value: '语文' }, { value: '英语' }
+                { value: '数学' },
+                { value: '物理' },
+                { value: '化学' },
+                { value: '生物' },
+                { value: '语文' },
+                { value: '英语' }
               ]}
             />
           </div>

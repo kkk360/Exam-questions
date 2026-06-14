@@ -1,9 +1,24 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Button, Row, Col, App, Popconfirm, Empty, Space, Tag } from 'antd'
 import {
-  PlusOutlined, EditOutlined, CopyOutlined,
-  DeleteOutlined, FilePdfOutlined, FileWordOutlined
+  Card,
+  Button,
+  Row,
+  Col,
+  App,
+  Popconfirm,
+  Empty,
+  Space,
+  Tag,
+  message as antMessage
+} from 'antd'
+import {
+  PlusOutlined,
+  EditOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+  FilePdfOutlined,
+  FileWordOutlined
 } from '@ant-design/icons'
 import { useExamStore } from '../../stores/examStore'
 import type { ExamPaper } from '../../types'
@@ -12,17 +27,23 @@ const ExamList: React.FC = () => {
   const navigate = useNavigate()
   const { message } = App.useApp()
   const { exams, loading, fetchExams, deleteExam, duplicateExam } = useExamStore()
+  const deletingRef = useRef(false)
 
   useEffect(() => {
     fetchExams()
   }, [])
 
   const handleDelete = async (id: string) => {
+    deletingRef.current = true
     try {
       await deleteExam(id)
-      message.success('试卷已删除')
+      message.success('已移入回收站')
     } catch {
       message.error('删除失败')
+    } finally {
+      setTimeout(() => {
+        deletingRef.current = false
+      }, 300)
     }
   }
 
@@ -37,10 +58,9 @@ const ExamList: React.FC = () => {
 
   const handleExportPdf = async (exam: ExamPaper) => {
     try {
-      const filePath = await window.electron.export.showSaveDialog(
-        `${exam.title}.pdf`,
-        [{ name: 'PDF文件', extensions: ['pdf'] }]
-      )
+      const filePath = await window.electron.export.showSaveDialog(`${exam.title}.pdf`, [
+        { name: 'PDF文件', extensions: ['pdf'] }
+      ])
       if (!filePath) return
       await window.electron.export.toPdf(exam.id, filePath)
       message.success('PDF导出成功')
@@ -51,10 +71,9 @@ const ExamList: React.FC = () => {
 
   const handleExportWord = async (exam: ExamPaper) => {
     try {
-      const filePath = await window.electron.export.showSaveDialog(
-        `${exam.title}.docx`,
-        [{ name: 'Word文档', extensions: ['docx'] }]
-      )
+      const filePath = await window.electron.export.showSaveDialog(`${exam.title}.docx`, [
+        { name: 'Word文档', extensions: ['docx'] }
+      ])
       if (!filePath) return
       await window.electron.export.toWord(exam.id, filePath)
       message.success('Word导出成功')
@@ -65,11 +84,14 @@ const ExamList: React.FC = () => {
 
   if (exams.length === 0 && !loading) {
     return (
-      <Card title="试卷管理" extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/exams/new')}>
-          新建试卷
-        </Button>
-      }>
+      <Card
+        title="试卷管理"
+        extra={
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/exams/new')}>
+            新建试卷
+          </Button>
+        }
+      >
         <Empty
           description="还没有试卷，点击上方按钮创建第一份试卷"
           image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -93,20 +115,36 @@ const ExamList: React.FC = () => {
             <Card
               hoverable
               style={{ height: '100%' }}
-              onClick={() => navigate(`/exams/${exam.id}/edit`)}
+              onClick={() => {
+                if (deletingRef.current) return
+                navigate(`/exams/${exam.id}/edit`)
+              }}
               actions={[
-                <EditOutlined key="edit" onClick={(e) => { e.stopPropagation(); navigate(`/exams/${exam.id}/edit`) }} />,
-                <CopyOutlined key="copy" onClick={(e) => { e.stopPropagation(); handleDuplicate(exam.id) }} />,
+                <EditOutlined
+                  key="edit"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(`/exams/${exam.id}/edit`)
+                  }}
+                />,
+                <CopyOutlined
+                  key="copy"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDuplicate(exam.id)
+                  }}
+                />,
                 <Popconfirm
                   key="delete"
-                  title="确认删除此试卷？"
+                  title="将试卷移入回收站？"
+                  description="可在回收站中恢复或永久删除"
                   onConfirm={() => handleDelete(exam.id)}
-                  okText="删除"
+                  okText="移入回收站"
                   cancelText="取消"
                   okButtonProps={{ danger: true }}
                 >
                   <DeleteOutlined onClick={(e) => e.stopPropagation()} />
-                </Popconfirm>,
+                </Popconfirm>
               ]}
             >
               <Card.Meta
@@ -123,14 +161,20 @@ const ExamList: React.FC = () => {
                       <Button
                         size="small"
                         icon={<FilePdfOutlined />}
-                        onClick={(e) => { e.stopPropagation(); handleExportPdf(exam) }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleExportPdf(exam)
+                        }}
                       >
                         PDF
                       </Button>
                       <Button
                         size="small"
                         icon={<FileWordOutlined />}
-                        onClick={(e) => { e.stopPropagation(); handleExportWord(exam) }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleExportWord(exam)
+                        }}
                       >
                         Word
                       </Button>

@@ -1,17 +1,4 @@
-import {
-  Document,
-  Packer,
-  Paragraph,
-  TextRun,
-  HeadingLevel,
-  AlignmentType,
-  PageBreak,
-  Table,
-  TableRow,
-  TableCell,
-  WidthType,
-  BorderStyle
-} from 'docx'
+import { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle } from 'docx'
 import { writeFileSync } from 'fs'
 import { getExamWithQuestions } from './exam.service'
 
@@ -42,7 +29,7 @@ export async function exportToWord(examId: string, outputPath: string): Promise<
 
   const { exam, questionsMap } = data
 
-  const children: (Paragraph | Table)[] = []
+  const children: any[] = []
 
   // Header
   if (exam.schoolName) {
@@ -195,9 +182,7 @@ export async function exportToWord(examId: string, outputPath: string): Promise<
           new Paragraph({
             indent: { left: 480 },
             spacing: { before: 80, after: 80 },
-            children: [
-              new TextRun({ text: '答：____________________', font: 'SimSun', size: 24 })
-            ]
+            children: [new TextRun({ text: '答：____________________', font: 'SimSun', size: 24 })]
           })
         )
       } else if (question.type === 'essay') {
@@ -205,67 +190,6 @@ export async function exportToWord(examId: string, outputPath: string): Promise<
         for (let i = 0; i < 5; i++) {
           children.push(new Paragraph({ spacing: { after: 200 }, children: [] }))
         }
-      }
-    }
-  }
-
-  // Answer key
-  if (exam.pageConfig.showAnswerKey) {
-    children.push(
-      new Paragraph({
-        children: [new PageBreak()]
-      })
-    )
-    children.push(createTitleParagraph('参考答案'))
-
-    globalIndex = 0
-    for (const section of exam.sections) {
-      children.push(
-        new Paragraph({
-          spacing: { before: 200, after: 100 },
-          children: [
-            new TextRun({
-              text: section.title,
-              font: 'SimHei',
-              size: 24,
-              bold: true
-            })
-          ]
-        })
-      )
-
-      for (const sq of section.questions) {
-        globalIndex++
-        const question = questionsMap[sq.questionId]
-        if (!question) continue
-
-        let answer = ''
-        if (question.type === 'single_choice') {
-          answer = String(question.correctAnswer)
-        } else if (question.type === 'multiple_choice') {
-          answer = Array.isArray(question.correctAnswer)
-            ? question.correctAnswer.join('、')
-            : String(question.correctAnswer)
-        } else if (question.type === 'fill_blank') {
-          answer = question.blankAnswers.join(' 或 ')
-        } else {
-          answer = question.explanation || '（见解析）'
-        }
-
-        children.push(
-          new Paragraph({
-            spacing: { after: 60 },
-            children: [
-              new TextRun({
-                text: `${globalIndex}. `,
-                font: 'SimSun',
-                size: 22,
-                bold: true
-              }),
-              new TextRun({ text: answer, font: 'SimSun', size: 22 })
-            ]
-          })
-        )
       }
     }
   }

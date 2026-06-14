@@ -44,7 +44,7 @@ const SymbolToolbar: React.FC<{ onInsert: (latex: string) => void }> = ({ onInse
                 minWidth: 36,
                 fontFamily: 'serif',
                 fontSize: 13,
-                borderRadius: 6,
+                borderRadius: 6
               }}
             >
               {sym.label}
@@ -146,10 +146,13 @@ const FormulaEditor: React.FC<FormulaEditorProps> = ({
             borderRadius: 8,
             minHeight: 48,
             lineHeight: 1.8,
-            transition: 'border-color 0.2s, box-shadow 0.2s',
+            transition: 'border-color 0.2s, box-shadow 0.2s'
           }}
         >
-          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 4, color: '#a1a1aa' }}>
+          <Text
+            type="secondary"
+            style={{ fontSize: 12, display: 'block', marginBottom: 4, color: '#a1a1aa' }}
+          >
             预览：
           </Text>
           <LaTeXRenderer content={previewContent} />

@@ -1,8 +1,9 @@
 import { ipcMain, dialog, app, shell } from 'electron'
 import * as questionService from '../services/question.service'
 import * as examService from '../services/exam.service'
+import * as answerKeyService from '../services/answer-key.service'
 import * as importExportService from '../services/import-export.service'
-import { exportToPdf } from '../services/export-pdf.service'
+import { exportToPdf, exportAnswerKeyToPdf } from '../services/export-pdf.service'
 import { exportToWord } from '../services/export-word.service'
 import { getConfig, saveConfig } from '../storage/store'
 
@@ -61,6 +62,23 @@ export function registerAllHandlers(): void {
     return examService.duplicateExam(id)
   })
 
+  // ========== Trash handlers ==========
+  ipcMain.handle('exams:listTrash', () => {
+    return examService.listTrashExams()
+  })
+
+  ipcMain.handle('exams:restore', (_event, id: string) => {
+    return examService.restoreExam(id)
+  })
+
+  ipcMain.handle('exams:permanentDelete', (_event, id: string) => {
+    return examService.permanentDeleteExam(id)
+  })
+
+  ipcMain.handle('exams:emptyTrash', () => {
+    return examService.emptyTrash()
+  })
+
   // ========== Export handlers ==========
   ipcMain.handle('export:toPdf', async (_event, examId: string, outputPath: string) => {
     return exportToPdf(examId, outputPath)
@@ -95,6 +113,25 @@ export function registerAllHandlers(): void {
     return importExportService.exportExams(filePath, ids)
   })
 
+  // ========== Answer Key handlers ==========
+  ipcMain.handle('answerKeys:list', () => {
+    return answerKeyService.listAnswerKeys()
+  })
+
+  ipcMain.handle('answerKeys:create', (_event, data) => {
+    return answerKeyService.createAnswerKey(data)
+  })
+
+  ipcMain.handle('answerKeys:delete', (_event, id: string) => {
+    return answerKeyService.deleteAnswerKey(id)
+  })
+
+  ipcMain.handle('answerKeys:exportPdf', async (_event, id: string, outputPath: string) => {
+    const key = answerKeyService.getAnswerKeyById(id)
+    if (!key) return false
+    return exportAnswerKeyToPdf(key, outputPath)
+  })
+
   // ========== System handlers ==========
   ipcMain.handle('system:getAppInfo', () => {
     return {
@@ -110,7 +147,11 @@ export function registerAllHandlers(): void {
 
   ipcMain.handle('system:updateConfig', (_event, partial) => {
     const config = getConfig()
-    const updated = { ...config, ...partial, preferences: { ...config.preferences, ...partial.preferences } }
+    const updated = {
+      ...config,
+      ...partial,
+      preferences: { ...config.preferences, ...partial.preferences }
+    }
     saveConfig(updated)
     return updated
   })

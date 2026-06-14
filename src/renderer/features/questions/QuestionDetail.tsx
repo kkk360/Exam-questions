@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {
-  Card, Descriptions, Tag, Rate, Button, Space, App, Popconfirm, Divider, Spin
-} from 'antd'
+import { Card, Descriptions, Tag, Rate, Button, Space, App, Popconfirm, Divider, Spin } from 'antd'
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useQuestionStore } from '../../stores/questionStore'
 import {
-  QUESTION_TYPE_LABELS, QUESTION_TYPE_COLORS, DIFFICULTY_LABELS,
+  QUESTION_TYPE_LABELS,
+  QUESTION_TYPE_COLORS,
+  DIFFICULTY_LABELS,
   type Question
 } from '../../types'
 import RichContent from '../../components/RichContent'
@@ -53,7 +53,9 @@ const QuestionDetail: React.FC = () => {
         <div style={{ textAlign: 'center', padding: 50, color: '#a1a1aa' }}>
           题目不存在
           <br />
-          <Button type="link" onClick={() => navigate('/questions')}>返回题库</Button>
+          <Button type="link" onClick={() => navigate('/questions')}>
+            返回题库
+          </Button>
         </div>
       </Card>
     )
@@ -100,7 +102,9 @@ const QuestionDetail: React.FC = () => {
             cancelText="取消"
             okButtonProps={{ danger: true }}
           >
-            <Button danger icon={<DeleteOutlined />}>删除</Button>
+            <Button danger icon={<DeleteOutlined />}>
+              删除
+            </Button>
           </Popconfirm>
         </Space>
       }
@@ -119,10 +123,14 @@ const QuestionDetail: React.FC = () => {
           </span>
         </Descriptions.Item>
         <Descriptions.Item label="默认分值">{question.score} 分</Descriptions.Item>
-        <Descriptions.Item label="章节" span={2}>{question.chapter || '-'}</Descriptions.Item>
+        <Descriptions.Item label="章节" span={2}>
+          {question.chapter || '-'}
+        </Descriptions.Item>
       </Descriptions>
 
-        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>题干</Divider>
+      <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
+        题干
+      </Divider>
       <div
         style={{
           padding: 16,
@@ -130,41 +138,53 @@ const QuestionDetail: React.FC = () => {
           borderRadius: 8,
           border: '1px solid #e4e4e7',
           lineHeight: 1.8,
-          transition: 'border-color 0.2s, box-shadow 0.2s',
+          transition: 'border-color 0.2s, box-shadow 0.2s'
         }}
       >
         <RichContent content={question.content} />
       </div>
 
       {/* Options for choice questions */}
-      {(question.type === 'single_choice' || question.type === 'multiple_choice') && question.options.length > 0 && (
-        <>
-          <Divider titlePlacement="left">选项</Divider>
-          <div style={{ paddingLeft: 16 }}>
-            {question.options.map((opt) => (
-              <div key={opt.label} style={{ marginBottom: 8, lineHeight: 1.8 }}>
-                <strong>{opt.label}.</strong> <RichContent content={opt.content} />
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+      {(question.type === 'single_choice' || question.type === 'multiple_choice') &&
+        question.options.length > 0 && (
+          <>
+            <Divider titlePlacement="left">选项</Divider>
+            <div style={{ paddingLeft: 16 }}>
+              {question.options.map((opt) => (
+                <div key={opt.label} style={{ marginBottom: 8, lineHeight: 1.8 }}>
+                  <strong>{opt.label}.</strong> <RichContent content={opt.content} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
-        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>正确答案</Divider>
-      <div style={{ padding: '8px 16px', background: '#ecfdf5', borderRadius: 8, border: '1px solid #a7f3d0' }}>
+      <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
+        正确答案
+      </Divider>
+      <div
+        style={{
+          padding: '8px 16px',
+          background: '#ecfdf5',
+          borderRadius: 8,
+          border: '1px solid #a7f3d0'
+        }}
+      >
         <span style={{ color: '#065f46' }}>{renderCorrectAnswer()}</span>
       </div>
 
       {question.explanation && (
         <>
-          <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>解析</Divider>
+          <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
+            解析
+          </Divider>
           <div
             style={{
               padding: 16,
               background: '#fafafa',
               borderRadius: 8,
               border: '1px solid #e4e4e7',
-              lineHeight: 1.8,
+              lineHeight: 1.8
             }}
           >
             <RichContent content={question.explanation} />

@@ -20,6 +20,16 @@ export default defineConfig({
         '@renderer': resolve('src/renderer')
       }
     },
-    plugins: [react()]
+    plugins: [react()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'antd-vendor': ['antd', '@ant-design/icons'],
+            'react-vendor': ['react', 'react-dom']
+          }
+        }
+      }
+    }
   }
 })

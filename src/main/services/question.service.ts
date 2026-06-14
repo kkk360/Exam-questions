@@ -1,9 +1,5 @@
-import { v4 as uuidv4 } from 'uuid'
-import {
-  getQuestions,
-  saveQuestions,
-  type Question
-} from '../storage/store'
+import { randomUUID } from 'crypto'
+import { getQuestions, saveQuestions, type Question } from '../storage/store'
 
 export interface QuestionFilters {
   type?: string
@@ -26,7 +22,10 @@ export function listQuestions(filters?: QuestionFilters): Question[] {
     }
     if (filters.keyword) {
       const kw = filters.keyword.toLowerCase()
-      if (!q.content.toLowerCase().includes(kw) && !q.tags.some((t) => t.toLowerCase().includes(kw))) {
+      if (
+        !q.content.toLowerCase().includes(kw) &&
+        !q.tags.some((t) => t.toLowerCase().includes(kw))
+      ) {
         return false
       }
     }
@@ -43,7 +42,7 @@ export function createQuestion(data: Omit<Question, 'id' | 'createdAt' | 'update
   const now = new Date().toISOString()
   const question: Question = {
     ...data,
-    id: uuidv4(),
+    id: randomUUID(),
     createdAt: now,
     updatedAt: now
   }

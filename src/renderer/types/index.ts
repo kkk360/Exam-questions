@@ -10,11 +10,23 @@ export interface ElectronAPI {
   exams: {
     list: () => Promise<ExamPaper[]>
     getById: (id: string) => Promise<ExamPaper | null>
-    getWithQuestions: (id: string) => Promise<{ exam: ExamPaper; questionsMap: Record<string, Question> } | null>
+    getWithQuestions: (
+      id: string
+    ) => Promise<{ exam: ExamPaper; questionsMap: Record<string, Question> } | null>
     create: (data: Omit<ExamPaper, 'id' | 'createdAt' | 'updatedAt'>) => Promise<ExamPaper>
     update: (id: string, data: Partial<ExamPaper>) => Promise<ExamPaper | null>
     delete: (id: string) => Promise<boolean>
     duplicate: (id: string) => Promise<ExamPaper | null>
+    listTrash: () => Promise<ExamPaper[]>
+    restore: (id: string) => Promise<ExamPaper | null>
+    permanentDelete: (id: string) => Promise<boolean>
+    emptyTrash: () => Promise<number>
+  }
+  answerKeys: {
+    list: () => Promise<AnswerKey[]>
+    create: (data: Omit<AnswerKey, 'id' | 'createdAt' | 'updatedAt'>) => Promise<AnswerKey>
+    delete: (id: string) => Promise<boolean>
+    exportPdf: (id: string, outputPath: string) => Promise<boolean>
   }
   export: {
     toPdf: (examId: string, outputPath: string) => Promise<boolean>
@@ -110,6 +122,8 @@ export interface ExamPaper {
   schoolName: string
   sections: Section[]
   pageConfig: PageConfig
+  deleted?: boolean
+  deletedAt?: string
   createdAt: string
   updatedAt: string
 }
@@ -154,4 +168,29 @@ export const DIFFICULTY_LABELS: Record<number, string> = {
   3: '中等',
   4: '较难',
   5: '困难'
+}
+
+export interface AnswerKeyItem {
+  questionIndex: number
+  type: string
+  content: string
+  answer: string
+  explanation: string
+}
+
+export interface AnswerKeySection {
+  title: string
+  description: string
+  items: AnswerKeyItem[]
+}
+
+export interface AnswerKey {
+  id: string
+  examId: string
+  examTitle: string
+  title: string
+  subject: string
+  sections: AnswerKeySection[]
+  createdAt: string
+  updatedAt: string
 }

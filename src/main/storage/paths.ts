@@ -25,3 +25,7 @@ export function getExamsFilePath(): string {
 export function getConfigFilePath(): string {
   return join(getDataDir(), 'config.json')
 }
+
+export function getAnswerKeysFilePath(): string {
+  return join(getDataDir(), 'answer-keys.json')
+}

@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-  Card, Form, Input, Select, Radio, InputNumber, Button, Space, Rate, App, Divider
+  Card,
+  Form,
+  Input,
+  Select,
+  Radio,
+  InputNumber,
+  Button,
+  Space,
+  Rate,
+  App,
+  Divider
 } from 'antd'
 import { PlusOutlined, MinusCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import { useQuestionStore } from '../../stores/questionStore'
@@ -121,19 +131,13 @@ const QuestionEditor: React.FC = () => {
         </Space>
       }
     >
-      <Form
-        form={form}
-        layout="vertical"
-        style={{ maxWidth: 800 }}
-      >
-        <Form.Item
-          name="type"
-          label="题型"
-          rules={[{ required: true, message: '请选择题型' }]}
-        >
+      <Form form={form} layout="vertical" style={{ maxWidth: 800 }}>
+        <Form.Item name="type" label="题型" rules={[{ required: true, message: '请选择题型' }]}>
           <Radio.Group onChange={(e) => handleTypeChange(e.target.value)}>
             {Object.entries(QUESTION_TYPE_LABELS).map(([key, label]) => (
-              <Radio.Button key={key} value={key}>{label}</Radio.Button>
+              <Radio.Button key={key} value={key}>
+                {label}
+              </Radio.Button>
             ))}
           </Radio.Group>
         </Form.Item>
@@ -186,12 +190,18 @@ const QuestionEditor: React.FC = () => {
         {/* Choice questions: options */}
         {(questionType === 'single_choice' || questionType === 'multiple_choice') && (
           <>
-            <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>选项</Divider>
+            <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
+              选项
+            </Divider>
             <Form.List name="options">
               {(fields, { add, remove }) => (
                 <>
                   {fields.map((field, index) => (
-                    <Space key={field.key} align="baseline" style={{ display: 'flex', marginBottom: 8 }}>
+                    <Space
+                      key={field.key}
+                      align="baseline"
+                      style={{ display: 'flex', marginBottom: 8 }}
+                    >
                       <span style={{ fontWeight: 600, width: 24, display: 'inline-block' }}>
                         {String.fromCharCode(65 + index)}.
                       </span>
@@ -201,7 +211,10 @@ const QuestionEditor: React.FC = () => {
                         rules={[{ required: true, message: '请输入选项内容' }]}
                         style={{ marginBottom: 0 }}
                       >
-                        <Input placeholder={`选项 ${String.fromCharCode(65 + index)}`} style={{ width: 500 }} />
+                        <Input
+                          placeholder={`选项 ${String.fromCharCode(65 + index)}`}
+                          style={{ width: 500 }}
+                        />
                       </Form.Item>
                       <Form.Item
                         {...field}
@@ -218,7 +231,9 @@ const QuestionEditor: React.FC = () => {
                   ))}
                   <Button
                     type="dashed"
-                    onClick={() => add({ label: String.fromCharCode(65 + fields.length), content: '' })}
+                    onClick={() =>
+                      add({ label: String.fromCharCode(65 + fields.length), content: '' })
+                    }
                     icon={<PlusOutlined />}
                     style={{ width: 548 }}
                     disabled={fields.length >= 8}
@@ -265,18 +280,27 @@ const QuestionEditor: React.FC = () => {
         {/* Fill-in-the-blank: answers */}
         {questionType === 'fill_blank' && (
           <>
-            <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>答案</Divider>
+            <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
+              答案
+            </Divider>
             <Form.List name="blankAnswers">
               {(fields, { add, remove }) => (
                 <>
                   {fields.map((field) => (
-                    <Space key={field.key} align="baseline" style={{ display: 'flex', marginBottom: 8 }}>
+                    <Space
+                      key={field.key}
+                      align="baseline"
+                      style={{ display: 'flex', marginBottom: 8 }}
+                    >
                       <Form.Item
                         {...field}
                         rules={[{ required: true, message: '请输入答案' }]}
                         style={{ marginBottom: 0 }}
                       >
-                        <Input placeholder="填空答案（支持多个可接受答案）" style={{ width: 500 }} />
+                        <Input
+                          placeholder="填空答案（支持多个可接受答案）"
+                          style={{ width: 500 }}
+                        />
                       </Form.Item>
                       {fields.length > 1 && (
                         <MinusCircleOutlined onClick={() => remove(field.name)} />
@@ -297,12 +321,11 @@ const QuestionEditor: React.FC = () => {
           </>
         )}
 
-        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>解析与标签</Divider>
+        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
+          解析与标签
+        </Divider>
 
-        <Form.Item
-          name="explanation"
-          label="解析"
-        >
+        <Form.Item name="explanation" label="解析">
           <FormulaEditor rows={4} placeholder="输入题目解析（可选）" />
         </Form.Item>
 

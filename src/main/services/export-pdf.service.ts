@@ -57,7 +57,7 @@ export async function exportToPdf(examId: string, outputPath: string): Promise<b
       const question = questionsMap[sq.questionId]
       if (!question) continue
 
-      let contentHtml = renderContent(question.content)
+      const contentHtml = renderContent(question.content)
 
       // Options for choice questions
       let optionsHtml = ''
@@ -100,37 +100,6 @@ export async function exportToPdf(examId: string, outputPath: string): Promise<b
         ${questionsHtml}
       </div>
     `
-  }
-
-  // Answer key HTML
-  let answerKeyHtml = ''
-  if (exam.pageConfig.showAnswerKey) {
-    globalIndex = 0
-    answerKeyHtml = '<div class="answer-key"><h2>参考答案</h2>'
-    for (const section of exam.sections) {
-      answerKeyHtml += `<h3>${section.title}</h3><div class="answers">`
-      for (const sq of section.questions) {
-        globalIndex++
-        const question = questionsMap[sq.questionId]
-        if (!question) continue
-
-        let answer = ''
-        if (question.type === 'single_choice') {
-          answer = String(question.correctAnswer)
-        } else if (question.type === 'multiple_choice') {
-          answer = Array.isArray(question.correctAnswer)
-            ? question.correctAnswer.join('、')
-            : String(question.correctAnswer)
-        } else if (question.type === 'fill_blank') {
-          answer = question.blankAnswers.join(' 或 ')
-        } else {
-          answer = renderContent(question.explanation || '（见解析）')
-        }
-        answerKeyHtml += `<div class="answer-item"><span class="answer-num">${globalIndex}.</span> ${answer}</div>`
-      }
-      answerKeyHtml += '</div>'
-    }
-    answerKeyHtml += '</div>'
   }
 
   const pc = exam.pageConfig
@@ -293,7 +262,6 @@ body {
   </div>
 </div>
 ${sectionsHtml}
-${answerKeyHtml}
 </body>
 </html>`
 
@@ -325,6 +293,106 @@ ${answerKeyHtml}
       }
     })
 
+    writeFileSync(outputPath, pdfBuffer)
+    return true
+  } finally {
+    if (!pdfWindow.isDestroyed()) {
+      pdfWindow.destroy()
+    }
+  }
+}
+
+export async function exportAnswerKeyToPdf(answerKey: any, outputPath: string): Promise<boolean> {
+  const katexCssPath = require.resolve('katex/dist/katex.min.css')
+  const katexCss = readFileSync(katexCssPath, 'utf-8')
+
+  let sectionsHtml = ''
+  let globalIndex = 0
+
+  for (const section of answerKey.sections) {
+    let itemsHtml = ''
+    for (const item of section.items) {
+      globalIndex++
+      const contentHtml = renderContent(item.content)
+      const answerHtml = renderContent(item.answer)
+      const explanationHtml = item.explanation ? renderContent(item.explanation) : ''
+
+      itemsHtml += `
+        <div class="question">
+          <div class="question-content">
+            <span class="question-number">${globalIndex}.</span>
+            <span class="question-text">${contentHtml}</span>
+          </div>
+          <div class="answer-row"><strong>答案：</strong>${answerHtml}</div>
+          ${explanationHtml ? `<div class="explanation-row"><strong>解析：</strong>${explanationHtml}</div>` : ''}
+        </div>
+      `
+    }
+
+    sectionsHtml += `
+      <div class="section">
+        <h2 class="section-title">${section.title}</h2>
+        ${section.description ? `<p class="section-desc">${section.description}</p>` : ''}
+        ${itemsHtml}
+      </div>
+    `
+  }
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+${katexCss}
+@page { size: A4 portrait; margin: 20mm 15mm; }
+body {
+  font-family: "SimSun", "宋体", serif;
+  font-size: 12pt;
+  line-height: 1.8;
+  color: #000;
+}
+h1 {
+  text-align: center;
+  font-family: "SimHei", "黑体", sans-serif;
+  font-size: 18pt;
+  border-bottom: 2px solid #000;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+.section { margin-top: 20px; }
+.section-title {
+  font-size: 14pt;
+  font-weight: bold;
+  font-family: "SimHei", "黑体", sans-serif;
+  margin-bottom: 5px;
+}
+.section-desc { font-size: 10pt; color: #666; margin-bottom: 10px; }
+.question { margin-bottom: 12px; page-break-inside: avoid; }
+.question-content { display: flex; align-items: baseline; gap: 4px; }
+.question-number { font-weight: bold; min-width: 24px; }
+.question-text { flex: 1; }
+.answer-row { margin: 2px 0 2px 28px; font-size: 11pt; color: #065f46; }
+.explanation-row { margin: 2px 0 2px 28px; font-size: 10pt; color: #71717a; }
+</style>
+</head>
+<body>
+<h1>${answerKey.title}</h1>
+${sectionsHtml}
+</body>
+</html>`
+
+  const pdfWindow = new BrowserWindow({
+    show: false,
+    webPreferences: { offscreen: true }
+  })
+
+  try {
+    await pdfWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`)
+    const pdfBuffer = await pdfWindow.webContents.printToPDF({
+      pageSize: 'A4',
+      printBackground: true,
+      margins: { top: 0.8, right: 0.6, bottom: 0.8, left: 0.6 }
+    })
     writeFileSync(outputPath, pdfBuffer)
     return true
   } finally {

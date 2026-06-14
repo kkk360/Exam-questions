@@ -1,17 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Card,
-  Button,
-  Row,
-  Col,
-  App,
-  Popconfirm,
-  Empty,
-  Space,
-  Tag,
-  Tooltip
-} from 'antd'
+import { Card, Button, Row, Col, App, Popconfirm, Empty, Space, Tag, Tooltip } from 'antd'
 import {
   PlusOutlined,
   EditOutlined,
@@ -101,7 +90,10 @@ const ExamList: React.FC = () => {
   }
 
   const totalExams = exams.length
-  const totalQuestions = exams.reduce((s, e) => s + e.sections.reduce((s2, sec) => s2 + sec.questions.length, 0), 0)
+  const totalQuestions = exams.reduce(
+    (s, e) => s + e.sections.reduce((s2, sec) => s2 + sec.questions.length, 0),
+    0
+  )
 
   return (
     <div>
@@ -113,7 +105,12 @@ const ExamList: React.FC = () => {
           </div>
         </div>
         <Space>
-          <Button type="primary" icon={<PlusOutlined />} size="large" onClick={() => navigate('/exams/new')}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            size="large"
+            onClick={() => navigate('/exams/new')}
+          >
             新建试卷
           </Button>
         </Space>
@@ -220,11 +217,6 @@ const ExamList: React.FC = () => {
                   >
                     {exam.title}
                   </div>
-                  {exam.subject && (
-                    <Tag color="green" style={{ marginBottom: 8 }}>
-                      {exam.subject}
-                    </Tag>
-                  )}
                 </div>
 
                 <div

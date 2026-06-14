@@ -10,7 +10,7 @@ import {
   Empty,
   Space,
   Tag,
-  message as antMessage
+  Tooltip
 } from 'antd'
 import {
   PlusOutlined,
@@ -18,7 +18,11 @@ import {
   CopyOutlined,
   DeleteOutlined,
   FilePdfOutlined,
-  FileWordOutlined
+  FileWordOutlined,
+  FileTextOutlined,
+  ClockCircleOutlined,
+  TrophyOutlined,
+  DashboardOutlined
 } from '@ant-design/icons'
 import { useExamStore } from '../../stores/examStore'
 import type { ExamPaper } from '../../types'
@@ -82,111 +86,185 @@ const ExamList: React.FC = () => {
     }
   }
 
-  if (exams.length === 0 && !loading) {
-    return (
-      <Card
-        title="试卷管理"
-        extra={
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/exams/new')}>
-            新建试卷
-          </Button>
-        }
-      >
-        <Empty
-          description="还没有试卷，点击上方按钮创建第一份试卷"
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-        />
-      </Card>
-    )
-  }
+  const totalExams = exams.length
+  const totalQuestions = exams.reduce((s, e) => s + e.sections.reduce((s2, sec) => s2 + sec.questions.length, 0), 0)
 
   return (
-    <Card
-      title="试卷管理"
-      extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/exams/new')}>
+    <div>
+      <div className="page-header">
+        <div>
+          <h2>试卷管理</h2>
+          <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 2 }}>
+            创建和管理您的试卷
+          </div>
+        </div>
+        <Button type="primary" icon={<PlusOutlined />} size="large" onClick={() => navigate('/exams/new')}>
           新建试卷
         </Button>
-      }
-    >
-      <Row gutter={[16, 16]}>
-        {exams.map((exam) => (
-          <Col key={exam.id} xs={24} sm={12} lg={8} xl={6}>
-            <Card
-              hoverable
-              style={{ height: '100%' }}
-              onClick={() => {
-                if (deletingRef.current) return
-                navigate(`/exams/${exam.id}/edit`)
-              }}
-              actions={[
-                <EditOutlined
-                  key="edit"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    navigate(`/exams/${exam.id}/edit`)
-                  }}
-                />,
-                <CopyOutlined
-                  key="copy"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleDuplicate(exam.id)
-                  }}
-                />,
-                <Popconfirm
-                  key="delete"
-                  title="将试卷移入回收站？"
-                  description="可在回收站中恢复或永久删除"
-                  onConfirm={() => handleDelete(exam.id)}
-                  okText="移入回收站"
-                  cancelText="取消"
-                  okButtonProps={{ danger: true }}
-                >
-                  <DeleteOutlined onClick={(e) => e.stopPropagation()} />
-                </Popconfirm>
-              ]}
-            >
-              <Card.Meta
-                title={<span style={{ fontSize: 16 }}>{exam.title}</span>}
-                description={
-                  <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                    {exam.subject && <Tag color="green">{exam.subject}</Tag>}
-                    <div style={{ color: '#71717a', fontSize: 13 }}>
-                      <div>考试时长：{exam.duration} 分钟</div>
-                      <div>满分：{exam.totalScore} 分</div>
-                      <div>大题数：{exam.sections.length}</div>
-                    </div>
-                    <Space size="small">
-                      <Button
-                        size="small"
-                        icon={<FilePdfOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleExportPdf(exam)
-                        }}
-                      >
-                        PDF
-                      </Button>
-                      <Button
-                        size="small"
-                        icon={<FileWordOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleExportWord(exam)
-                        }}
-                      >
-                        Word
-                      </Button>
-                    </Space>
-                  </Space>
-                }
-              />
-            </Card>
+      </div>
+
+      {exams.length > 0 && (
+        <Row gutter={16} style={{ marginBottom: 20 }}>
+          <Col span={12}>
+            <div className="stats-card">
+              <div className="stats-value">{totalExams}</div>
+              <div className="stats-label">试卷总数</div>
+            </div>
           </Col>
-        ))}
-      </Row>
-    </Card>
+          <Col span={12}>
+            <div className="stats-card">
+              <div className="stats-value">{totalQuestions}</div>
+              <div className="stats-label">题目总数</div>
+            </div>
+          </Col>
+        </Row>
+      )}
+
+      {exams.length === 0 && !loading ? (
+        <Card>
+          <Empty
+            description="还没有试卷，点击上方按钮创建第一份试卷"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          >
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/exams/new')}>
+              新建试卷
+            </Button>
+          </Empty>
+        </Card>
+      ) : (
+        <Row gutter={[16, 16]}>
+          {exams.map((exam) => (
+            <Col key={exam.id} xs={24} sm={12} lg={8} xl={6}>
+              <Card
+                hoverable
+                style={{
+                  height: '100%',
+                  cursor: 'pointer',
+                  overflow: 'hidden'
+                }}
+                onClick={() => {
+                  if (deletingRef.current) return
+                  navigate(`/exams/${exam.id}/edit`)
+                }}
+                actions={[
+                  <Tooltip title="编辑" key="edit">
+                    <EditOutlined
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        navigate(`/exams/${exam.id}/edit`)
+                      }}
+                    />
+                  </Tooltip>,
+                  <Tooltip title="复制" key="copy">
+                    <CopyOutlined
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDuplicate(exam.id)
+                      }}
+                    />
+                  </Tooltip>,
+                  <Popconfirm
+                    key="delete"
+                    title="将试卷移入回收站？"
+                    description="可在回收站中恢复或永久删除"
+                    onConfirm={() => handleDelete(exam.id)}
+                    okText="移入回收站"
+                    cancelText="取消"
+                    okButtonProps={{ danger: true }}
+                  >
+                    <Tooltip title="删除">
+                      <DeleteOutlined onClick={(e) => e.stopPropagation()} />
+                    </Tooltip>
+                  </Popconfirm>
+                ]}
+              >
+                <div style={{ marginBottom: 12 }}>
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 12
+                    }}
+                  >
+                    <FileTextOutlined style={{ color: '#059669', fontSize: 18 }} />
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: 'var(--text-primary)',
+                      marginBottom: 8,
+                      lineHeight: 1.3
+                    }}
+                  >
+                    {exam.title}
+                  </div>
+                  {exam.subject && (
+                    <Tag color="green" style={{ marginBottom: 8 }}>
+                      {exam.subject}
+                    </Tag>
+                  )}
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 16,
+                    fontSize: 12,
+                    color: 'var(--text-secondary)',
+                    padding: '10px 0 0',
+                    borderTop: '1px solid var(--border-color)'
+                  }}
+                >
+                  <Space size={4}>
+                    <ClockCircleOutlined />
+                    <span>{exam.duration}分钟</span>
+                  </Space>
+                  <Space size={4}>
+                    <TrophyOutlined />
+                    <span>{exam.totalScore}分</span>
+                  </Space>
+                  <Space size={4}>
+                    <DashboardOutlined />
+                    <span>{exam.sections.length}大题</span>
+                  </Space>
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <Space size="small">
+                    <Button
+                      size="small"
+                      icon={<FilePdfOutlined />}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleExportPdf(exam)
+                      }}
+                    >
+                      PDF
+                    </Button>
+                    <Button
+                      size="small"
+                      icon={<FileWordOutlined />}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleExportWord(exam)
+                      }}
+                    >
+                      Word
+                    </Button>
+                  </Space>
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
+    </div>
   )
 }
 

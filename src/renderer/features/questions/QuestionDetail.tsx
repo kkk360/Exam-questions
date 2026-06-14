@@ -49,8 +49,8 @@ const QuestionDetail: React.FC = () => {
 
   if (!question) {
     return (
-      <Card style={{ borderRadius: 12 }}>
-        <div style={{ textAlign: 'center', padding: 50, color: '#a1a1aa' }}>
+      <Card>
+        <div style={{ textAlign: 'center', padding: 50, color: 'var(--text-tertiary)' }}>
           题目不存在
           <br />
           <Button type="link" onClick={() => navigate('/questions')}>
@@ -77,16 +77,16 @@ const QuestionDetail: React.FC = () => {
   }
 
   return (
-    <Card
-      title={
+    <div>
+      <div className="page-header">
         <Space>
           <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/questions')}>
             返回
           </Button>
-          <span>题目详情</span>
+          <div>
+            <h2>题目详情</h2>
+          </div>
         </Space>
-      }
-      extra={
         <Space>
           <Button
             type="primary"
@@ -107,102 +107,111 @@ const QuestionDetail: React.FC = () => {
             </Button>
           </Popconfirm>
         </Space>
-      }
-    >
-      <Descriptions column={2} bordered>
-        <Descriptions.Item label="题型">
-          <Tag color={QUESTION_TYPE_COLORS[question.type]}>
-            {QUESTION_TYPE_LABELS[question.type]}
-          </Tag>
-        </Descriptions.Item>
-        <Descriptions.Item label="学科">{question.subject || '-'}</Descriptions.Item>
-        <Descriptions.Item label="难度">
-          <Rate disabled value={question.difficulty} count={5} style={{ fontSize: 14 }} />
-          <span style={{ marginLeft: 8, color: '#888' }}>
-            {DIFFICULTY_LABELS[question.difficulty]}
-          </span>
-        </Descriptions.Item>
-        <Descriptions.Item label="默认分值">{question.score} 分</Descriptions.Item>
-        <Descriptions.Item label="章节" span={2}>
-          {question.chapter || '-'}
-        </Descriptions.Item>
-      </Descriptions>
-
-      <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
-        题干
-      </Divider>
-      <div
-        style={{
-          padding: 16,
-          background: '#fafafa',
-          borderRadius: 8,
-          border: '1px solid #e4e4e7',
-          lineHeight: 1.8,
-          transition: 'border-color 0.2s, box-shadow 0.2s'
-        }}
-      >
-        <RichContent content={question.content} />
       </div>
 
-      {/* Options for choice questions */}
-      {(question.type === 'single_choice' || question.type === 'multiple_choice') &&
-        question.options.length > 0 && (
+      <Card>
+        <Descriptions column={2} bordered size="middle">
+          <Descriptions.Item label="题型">
+            <Tag color={QUESTION_TYPE_COLORS[question.type]} style={{ borderRadius: 4 }}>
+              {QUESTION_TYPE_LABELS[question.type]}
+            </Tag>
+          </Descriptions.Item>
+          <Descriptions.Item label="学科">{question.subject || '-'}</Descriptions.Item>
+          <Descriptions.Item label="难度">
+            <Space>
+              <Rate disabled value={question.difficulty} count={5} style={{ fontSize: 14 }} />
+              <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
+                {DIFFICULTY_LABELS[question.difficulty]}
+              </span>
+            </Space>
+          </Descriptions.Item>
+          <Descriptions.Item label="默认分值">{question.score} 分</Descriptions.Item>
+          <Descriptions.Item label="章节" span={2}>
+            {question.chapter || '-'}
+          </Descriptions.Item>
+        </Descriptions>
+
+        <Divider titlePlacement="left" style={{ borderColor: 'var(--border-color)', fontSize: 13, color: 'var(--text-secondary)' }}>
+          题干内容
+        </Divider>
+        <div
+          style={{
+            padding: 16,
+            background: 'var(--fill-quaternary, #f9fafb)',
+            borderRadius: 8,
+            border: '1px solid var(--border-color)',
+            lineHeight: 1.8
+          }}
+        >
+          <RichContent content={question.content} />
+        </div>
+
+        {(question.type === 'single_choice' || question.type === 'multiple_choice') &&
+          question.options.length > 0 && (
+            <>
+              <Divider titlePlacement="left" style={{ borderColor: 'var(--border-color)', fontSize: 13, color: 'var(--text-secondary)' }}>
+                选项
+              </Divider>
+              <div style={{ paddingLeft: 16 }}>
+                {question.options.map((opt) => (
+                  <div key={opt.label} style={{ marginBottom: 8, lineHeight: 1.8 }}>
+                    <strong style={{ color: 'var(--text-primary)' }}>{opt.label}.</strong>{' '}
+                    <RichContent content={opt.content} />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+        <Divider titlePlacement="left" style={{ borderColor: 'var(--border-color)', fontSize: 13, color: 'var(--text-secondary)' }}>
+          正确答案
+        </Divider>
+        <div
+          style={{
+            padding: '10px 16px',
+            background: '#ecfdf5',
+            borderRadius: 8,
+            border: '1px solid #a7f3d0'
+          }}
+        >
+          <span style={{ color: '#065f46', fontWeight: 500 }}>{renderCorrectAnswer()}</span>
+        </div>
+
+        {question.explanation && (
           <>
-            <Divider titlePlacement="left">选项</Divider>
-            <div style={{ paddingLeft: 16 }}>
-              {question.options.map((opt) => (
-                <div key={opt.label} style={{ marginBottom: 8, lineHeight: 1.8 }}>
-                  <strong>{opt.label}.</strong> <RichContent content={opt.content} />
-                </div>
-              ))}
+            <Divider titlePlacement="left" style={{ borderColor: 'var(--border-color)', fontSize: 13, color: 'var(--text-secondary)' }}>
+              解析
+            </Divider>
+            <div
+              style={{
+                padding: 16,
+                background: '#f9fafb',
+                borderRadius: 8,
+                border: '1px solid #ebedf0',
+                lineHeight: 1.8
+              }}
+            >
+              <RichContent content={question.explanation} />
             </div>
           </>
         )}
 
-      <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
-        正确答案
-      </Divider>
-      <div
-        style={{
-          padding: '8px 16px',
-          background: '#ecfdf5',
-          borderRadius: 8,
-          border: '1px solid #a7f3d0'
-        }}
-      >
-        <span style={{ color: '#065f46' }}>{renderCorrectAnswer()}</span>
-      </div>
-
-      {question.explanation && (
-        <>
-          <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
-            解析
-          </Divider>
-          <div
-            style={{
-              padding: 16,
-              background: '#fafafa',
-              borderRadius: 8,
-              border: '1px solid #e4e4e7',
-              lineHeight: 1.8
-            }}
-          >
-            <RichContent content={question.explanation} />
-          </div>
-        </>
-      )}
-
-      {question.tags.length > 0 && (
-        <>
-          <Divider titlePlacement="left">标签</Divider>
-          <Space wrap>
-            {question.tags.map((tag) => (
-              <Tag key={tag}>{tag}</Tag>
-            ))}
-          </Space>
-        </>
-      )}
-    </Card>
+        {question.tags.length > 0 && (
+          <>
+            <Divider titlePlacement="left" style={{ borderColor: 'var(--border-color)', fontSize: 13, color: 'var(--text-secondary)' }}>
+              标签
+            </Divider>
+            <Space wrap>
+              {question.tags.map((tag) => (
+                <Tag key={tag} style={{ borderRadius: 4 }}>
+                  {tag}
+                </Tag>
+              ))}
+            </Space>
+          </>
+        )}
+      </Card>
+    </div>
   )
 }
 

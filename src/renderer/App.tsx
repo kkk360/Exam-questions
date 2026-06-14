@@ -10,119 +10,196 @@ import SettingsPage from './features/settings/SettingsPage'
 import QuestionList from './features/questions/QuestionList'
 import QuestionDetail from './features/questions/QuestionDetail'
 import QuestionEditor from './features/questions/QuestionEditor'
+import { useThemeStore } from './stores/themeStore'
+
+const lightTheme = {
+  algorithm: theme.defaultAlgorithm,
+  token: {
+    colorPrimary: '#059669',
+    colorPrimaryHover: '#047857',
+    colorPrimaryActive: '#036b50',
+    colorSuccess: '#10b981',
+    colorWarning: '#f59e0b',
+    colorError: '#ef4444',
+    colorInfo: '#3b82f6',
+    borderRadius: 8,
+    borderRadiusLG: 12,
+    borderRadiusSM: 6,
+    fontSize: 14,
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
+    colorBgContainer: '#ffffff',
+    colorBgLayout: '#f8f9fb',
+    colorBgElevated: '#ffffff',
+    colorBorder: '#ebedf0',
+    colorBorderSecondary: '#f0f0f0',
+    colorText: '#1a1a1a',
+    colorTextSecondary: '#6b7280',
+    colorTextTertiary: '#9ca3af',
+    colorFillTertiary: '#f3f4f6',
+    colorFillQuaternary: '#f9fafb',
+    boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.03)',
+    boxShadowSecondary:
+      '0 4px 12px 0 rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04)'
+  },
+  components: {
+    Button: {
+      borderRadius: 8,
+      borderRadiusLG: 8,
+      borderRadiusSM: 6,
+      controlHeight: 36,
+      controlHeightLG: 44,
+      controlHeightSM: 28,
+      primaryShadow: '0 1px 3px 0 rgb(5 150 105 / 0.2)'
+    },
+    Card: {
+      borderRadiusLG: 12,
+      boxShadowTertiary:
+        '0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.03)',
+      colorBorderSecondary: '#f0f0f0'
+    },
+    Input: {
+      borderRadius: 8,
+      controlHeight: 36,
+      activeShadow: '0 0 0 2px rgb(5 150 105 / 0.08)'
+    },
+    Select: {
+      borderRadius: 8,
+      controlHeight: 36
+    },
+    Table: {
+      borderRadiusLG: 12,
+      headerBg: '#f9fafb',
+      headerColor: '#6b7280',
+      borderColor: '#f0f0f0',
+      rowHoverBg: '#f9fafb'
+    },
+    Menu: {
+      itemBorderRadius: 8,
+      itemMarginInline: 8,
+      itemPaddingInline: 12,
+      itemColor: '#6b7280',
+      itemHoverColor: '#1a1a1a',
+      itemHoverBg: '#f3f4f6',
+      itemSelectedColor: '#059669',
+      itemSelectedBg: '#ecfdf5',
+      subMenuItemBg: 'transparent'
+    },
+    Modal: { borderRadiusLG: 12 },
+    Popconfirm: { borderRadiusLG: 10 },
+    Tag: { borderRadiusSM: 6 },
+    Radio: { borderRadiusSM: 6 }
+  }
+}
+
+const darkTheme = {
+  algorithm: theme.darkAlgorithm,
+  token: {
+    colorPrimary: '#10b981',
+    colorPrimaryHover: '#34d399',
+    colorPrimaryActive: '#059669',
+    colorSuccess: '#34d399',
+    colorWarning: '#fbbf24',
+    colorError: '#f87171',
+    colorInfo: '#60a5fa',
+    borderRadius: 8,
+    borderRadiusLG: 12,
+    borderRadiusSM: 6,
+    fontSize: 14,
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
+    colorBgContainer: '#1e1e2e',
+    colorBgLayout: '#181825',
+    colorBgElevated: '#1e1e2e',
+    colorBorder: '#313244',
+    colorBorderSecondary: '#2a2a3c',
+    colorText: '#cdd6f4',
+    colorTextSecondary: '#9399b2',
+    colorTextTertiary: '#6c7086',
+    colorFillTertiary: '#2a2a3c',
+    colorFillQuaternary: '#232334',
+    boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.15)',
+    boxShadowSecondary:
+      '0 4px 12px 0 rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.2)'
+  },
+  components: {
+    Button: {
+      borderRadius: 8,
+      borderRadiusLG: 8,
+      borderRadiusSM: 6,
+      controlHeight: 36,
+      controlHeightLG: 44,
+      controlHeightSM: 28,
+      primaryShadow: '0 1px 3px 0 rgb(16 185 129 / 0.25)'
+    },
+    Card: {
+      borderRadiusLG: 12,
+      boxShadowTertiary:
+        '0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.15)',
+      colorBorderSecondary: '#2a2a3c'
+    },
+    Input: {
+      borderRadius: 8,
+      controlHeight: 36,
+      activeShadow: '0 0 0 2px rgb(16 185 129 / 0.15)'
+    },
+    Select: {
+      borderRadius: 8,
+      controlHeight: 36
+    },
+    Table: {
+      borderRadiusLG: 12,
+      headerBg: '#1e1e2e',
+      headerColor: '#9399b2',
+      borderColor: '#2a2a3c',
+      rowHoverBg: '#232334'
+    },
+    Menu: {
+      itemBorderRadius: 8,
+      itemMarginInline: 8,
+      itemPaddingInline: 12,
+      itemColor: '#9399b2',
+      itemHoverColor: '#cdd6f4',
+      itemHoverBg: '#2a2a3c',
+      itemSelectedColor: '#10b981',
+      itemSelectedBg: 'rgb(16 185 129 / 0.12)',
+      subMenuItemBg: 'transparent'
+    },
+    Modal: { borderRadiusLG: 12 },
+    Popconfirm: { borderRadiusLG: 10 },
+    Tag: { borderRadiusSM: 6 },
+    Radio: { borderRadiusSM: 6 }
+  }
+}
 
 function App(): React.ReactElement {
-  return (
-    <ConfigProvider
-      locale={zhCN}
-      theme={{
-        algorithm: theme.defaultAlgorithm,
-        token: {
-          colorPrimary: '#059669',
-          colorPrimaryHover: '#047857',
-          colorPrimaryActive: '#036b50',
-          colorSuccess: '#10b981',
-          colorWarning: '#f59e0b',
-          colorError: '#ef4444',
-          colorInfo: '#0ea5e9',
-          borderRadius: 8,
-          borderRadiusLG: 12,
-          borderRadiusSM: 6,
-          fontSize: 14,
-          fontFamily:
-            '-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
-          colorBgContainer: '#ffffff',
-          colorBgLayout: '#f4f4f5',
-          colorBgElevated: '#ffffff',
-          colorBorder: '#e4e4e7',
-          colorBorderSecondary: '#f0f0f1',
-          colorText: '#18181b',
-          colorTextSecondary: '#71717a',
-          colorTextTertiary: '#a1a1aa',
-          colorFillTertiary: '#f4f4f5',
-          colorFillQuaternary: '#fafafa',
-          boxShadow: '0 1px 3px 0 rgb(24 24 27 / 0.05), 0 1px 2px -1px rgb(24 24 27 / 0.04)',
-          boxShadowSecondary:
-            '0 4px 6px -1px rgb(24 24 27 / 0.06), 0 2px 4px -2px rgb(24 24 27 / 0.05)'
-        },
-        components: {
-          Button: {
-            borderRadius: 8,
-            borderRadiusLG: 8,
-            borderRadiusSM: 6,
-            controlHeight: 36,
-            controlHeightLG: 44,
-            controlHeightSM: 28,
-            primaryShadow: '0 1px 2px 0 rgb(5 150 105 / 0.2)'
-          },
-          Card: {
-            borderRadiusLG: 12,
-            boxShadowTertiary:
-              '0 1px 3px 0 rgb(24 24 27 / 0.05), 0 1px 2px -1px rgb(24 24 27 / 0.04)',
-            colorBorderSecondary: '#f0f0f1'
-          },
-          Input: {
-            borderRadius: 8,
-            controlHeight: 36,
-            activeShadow: '0 0 0 2px rgb(5 150 105 / 0.1)'
-          },
-          Select: {
-            borderRadius: 8,
-            controlHeight: 36
-          },
-          Table: {
-            borderRadiusLG: 12,
-            headerBg: '#fafafa',
-            headerColor: '#52525b',
-            borderColor: '#f0f0f1',
-            rowHoverBg: '#f4f4f5'
-          },
-          Menu: {
-            itemBorderRadius: 6,
-            itemMarginInline: 8,
-            itemPaddingInline: 12,
-            itemColor: '#52525b',
-            itemHoverColor: '#18181b',
-            itemHoverBg: '#f4f4f5',
-            itemSelectedColor: '#059669',
-            itemSelectedBg: '#ecfdf5'
-          },
-          Modal: {
-            borderRadiusLG: 12
-          },
-          Popconfirm: {
-            borderRadiusLG: 10
-          },
-          Tag: {
-            borderRadiusSM: 4
-          },
-          Radio: {
-            borderRadiusSM: 6
-          }
-        }
-      }}
-    >
-      <AntdApp>
-        <HashRouter>
-          <Routes>
-            {/* Routes inside AppLayout (with sidebar navigation) */}
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<Navigate to="/exams" replace />} />
-              <Route path="/exams" element={<ExamList />} />
-              <Route path="/questions" element={<QuestionList />} />
-              <Route path="/questions/new" element={<QuestionEditor />} />
-              <Route path="/questions/:id" element={<QuestionDetail />} />
-              <Route path="/questions/:id/edit" element={<QuestionEditor />} />
-              <Route path="/exam-trash" element={<ExamTrash />} />
-              <Route path="/answer-keys" element={<AnswerKeyList />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Route>
+  const mode = useThemeStore((s) => s.mode)
 
-            {/* Full-screen routes (no sidebar) */}
-            <Route path="/exams/new" element={<ExamBuilder />} />
-            <Route path="/exams/:id/edit" element={<ExamBuilder />} />
-          </Routes>
-        </HashRouter>
+  return (
+    <ConfigProvider locale={zhCN} theme={mode === 'dark' ? darkTheme : lightTheme}>
+      <AntdApp>
+        <div
+          data-theme={mode}
+          style={{ height: '100%', background: mode === 'dark' ? '#181825' : '#f8f9fb' }}
+        >
+          <HashRouter>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<Navigate to="/exams" replace />} />
+                <Route path="/exams" element={<ExamList />} />
+                <Route path="/questions" element={<QuestionList />} />
+                <Route path="/questions/new" element={<QuestionEditor />} />
+                <Route path="/questions/:id" element={<QuestionDetail />} />
+                <Route path="/questions/:id/edit" element={<QuestionEditor />} />
+                <Route path="/exam-trash" element={<ExamTrash />} />
+                <Route path="/answer-keys" element={<AnswerKeyList />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Route>
+              <Route path="/exams/new" element={<ExamBuilder />} />
+              <Route path="/exams/:id/edit" element={<ExamBuilder />} />
+            </Routes>
+          </HashRouter>
+        </div>
       </AntdApp>
     </ConfigProvider>
   )

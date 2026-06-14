@@ -66,7 +66,7 @@ const QuestionFormPanel: React.FC<{
   return (
     <div>
       <Space style={{ marginBottom: 12 }}>
-        <span style={{ fontWeight: 500, color: '#52525b' }}>分值：</span>
+        <span style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>分值：</span>
         <InputNumber
           min={0}
           max={100}
@@ -78,7 +78,7 @@ const QuestionFormPanel: React.FC<{
       </Space>
 
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontWeight: 500, marginBottom: 4, color: '#52525b' }}>题干</div>
+        <div style={{ fontWeight: 500, marginBottom: 4, color: 'var(--text-secondary)' }}>题干</div>
         <FormulaEditor
           value={question.content}
           onChange={(v) => update({ content: v })}
@@ -89,7 +89,7 @@ const QuestionFormPanel: React.FC<{
 
       {(question.type === 'single_choice' || question.type === 'multiple_choice') && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontWeight: 500, marginBottom: 4, color: '#52525b' }}>选项</div>
+          <div style={{ fontWeight: 500, marginBottom: 4, color: 'var(--text-secondary)' }}>选项</div>
           {question.options.map((opt, i) => (
             <Space key={i} align="baseline" style={{ display: 'flex', marginBottom: 6 }}>
               <span style={{ fontWeight: 600, width: 20 }}>{opt.label}.</span>
@@ -115,7 +115,7 @@ const QuestionFormPanel: React.FC<{
                       }))
                     update({ options: opts })
                   }}
-                  style={{ color: '#a1a1aa' }}
+                  style={{ color: 'var(--text-tertiary)' }}
                 />
               )}
             </Space>
@@ -136,7 +136,7 @@ const QuestionFormPanel: React.FC<{
             </Button>
           )}
           <div style={{ marginTop: 8 }}>
-            <span style={{ fontWeight: 500, marginRight: 8, color: '#52525b' }}>答案：</span>
+            <span style={{ fontWeight: 500, marginRight: 8, color: 'var(--text-secondary)' }}>答案：</span>
             {question.type === 'single_choice' ? (
               <Radio.Group
                 value={question.correctAnswer as string}
@@ -168,7 +168,7 @@ const QuestionFormPanel: React.FC<{
 
       {question.type === 'fill_blank' && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontWeight: 500, marginBottom: 4, color: '#52525b' }}>答案</div>
+          <div style={{ fontWeight: 500, marginBottom: 4, color: 'var(--text-secondary)' }}>答案</div>
           {question.blankAnswers.map((ans, i) => (
             <Space key={i} style={{ marginBottom: 6 }}>
               <Input
@@ -189,7 +189,7 @@ const QuestionFormPanel: React.FC<{
                       blankAnswers: question.blankAnswers.filter((_, j) => j !== i)
                     })
                   }
-                  style={{ color: '#a1a1aa' }}
+                  style={{ color: 'var(--text-tertiary)' }}
                 />
               )}
             </Space>
@@ -206,7 +206,7 @@ const QuestionFormPanel: React.FC<{
       )}
 
       <div>
-        <div style={{ fontWeight: 500, marginBottom: 4, color: '#52525b' }}>解析（可选）</div>
+        <div style={{ fontWeight: 500, marginBottom: 4, color: 'var(--text-secondary)' }}>解析（可选）</div>
         <FormulaEditor
           value={question.explanation}
           onChange={(v) => update({ explanation: v })}
@@ -254,7 +254,7 @@ const PaperPreview: React.FC<{
           marginBottom: 16
         }}
       >
-        {schoolName && <div style={{ fontSize: 13, color: '#52525b' }}>{schoolName}</div>}
+        {schoolName && <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{schoolName}</div>}
         <h1
           style={{
             fontSize: 20,
@@ -265,7 +265,7 @@ const PaperPreview: React.FC<{
         >
           {title || '未命名试卷'}
         </h1>
-        {subtitle && <div style={{ fontSize: 13, color: '#52525b' }}>{subtitle}</div>}
+        {subtitle && <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{subtitle}</div>}
         <div style={{ fontSize: 11, color: '#71717a', marginTop: 6 }}>
           {subject && <span>{subject} | </span>}考试时间：{duration}分钟 | 满分：{totalScore}分
         </div>
@@ -725,10 +725,11 @@ const ExamBuilder: React.FC = () => {
       {/* Top metadata bar */}
       <div
         style={{
-          background: '#ffffff',
-          padding: '10px 16px',
-          borderBottom: '1px solid #e4e4e7',
-          flexShrink: 0
+          background: 'var(--sidebar-bg)',
+          padding: '10px 20px',
+          borderBottom: '1px solid var(--border-color)',
+          flexShrink: 0,
+          boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.03)'
         }}
       >
         <div
@@ -742,11 +743,13 @@ const ExamBuilder: React.FC = () => {
           <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/exams')}>
             返回
           </Button>
+          <div style={{ width: 1, height: 20, background: 'var(--border-color)', margin: '0 4px' }} />
           <Input
             placeholder="试卷标题"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            style={{ width: 220, fontWeight: 600 }}
+            style={{ width: 200, fontWeight: 600 }}
+            variant="borderless"
           />
           <Select
             placeholder="学科"
@@ -754,6 +757,7 @@ const ExamBuilder: React.FC = () => {
             onChange={(v) => setSubject(v || '')}
             allowClear
             style={{ width: 100 }}
+            variant="borderless"
             options={['数学', '物理', '化学', '生物', '语文', '英语', '历史', '地理', '政治'].map(
               (s) => ({ value: s })
             )}
@@ -762,34 +766,47 @@ const ExamBuilder: React.FC = () => {
             placeholder="学校"
             value={schoolName}
             onChange={(e) => setSchoolName(e.target.value)}
-            style={{ width: 130 }}
+            style={{ width: 120 }}
+            variant="borderless"
           />
           <Input
             placeholder="副标题"
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
-            style={{ width: 150 }}
+            style={{ width: 130 }}
+            variant="borderless"
           />
-          <Space size="small">
-            <span style={{ fontSize: 13, color: '#71717a' }}>时长</span>
+          <Space size={4}>
+            <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>时长</span>
             <InputNumber
               min={1}
               max={300}
               value={duration}
               onChange={(v) => setDuration(v || 120)}
               size="small"
-              style={{ width: 65 }}
+              style={{ width: 56 }}
+              variant="borderless"
             />
-            <span style={{ fontSize: 13, color: '#71717a' }}>分钟</span>
+            <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>分钟</span>
           </Space>
-          <span style={{ fontSize: 13, color: '#71717a' }}>
-            总分：<strong style={{ color: '#059669' }}>{totalScore}</strong>
-          </span>
+          <div
+            style={{
+              fontSize: 12,
+              color: 'var(--text-secondary)',
+              padding: '2px 10px',
+              background: 'var(--primary-light)',
+              borderRadius: 6
+            }}
+          >
+            总分 <strong style={{ color: 'var(--primary-color)' }}>{totalScore}</strong>
+          </div>
           <div style={{ marginLeft: 'auto' }}>
-            <Space>
-              {autoSaving && <span style={{ fontSize: 12, color: '#a1a1aa' }}>正在保存…</span>}
+            <Space size={8}>
+              {autoSaving && (
+                <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>正在保存…</span>
+              )}
               {!autoSaving && autoSavedTime > 0 && (
-                <span style={{ fontSize: 12, color: '#10b981' }}>已自动保存</span>
+                <span style={{ fontSize: 12, color: '#10b981' }}>✓ 已保存</span>
               )}
               <Button type="primary" onClick={handleSave} loading={saving}>
                 保存
@@ -812,7 +829,7 @@ const ExamBuilder: React.FC = () => {
             style={{
               height: '100%',
               overflow: 'auto',
-              background: '#e4e4e7',
+              background: '#f0f1f3',
               padding: 20
             }}
           >
@@ -839,9 +856,9 @@ const ExamBuilder: React.FC = () => {
 
         <Separator
           style={{
-            width: 4,
+            width: 3,
             cursor: 'col-resize',
-            background: '#d4d4d8',
+            background: 'var(--border-color)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -850,10 +867,10 @@ const ExamBuilder: React.FC = () => {
         >
           <div
             style={{
-              width: 2,
-              height: 32,
+              width: 3,
+              height: 24,
               borderRadius: 2,
-              background: '#a1a1aa',
+              background: '#d1d5db',
               transition: 'background 0.2s'
             }}
           />
@@ -863,22 +880,26 @@ const ExamBuilder: React.FC = () => {
           <div
             style={{
               height: '100%',
-              borderLeft: '1px solid #e4e4e7',
-              background: '#ffffff',
+              borderLeft: '1px solid var(--border-color)',
+              background: 'var(--sidebar-bg)',
               overflow: 'auto'
             }}
           >
             <div
               style={{
-                padding: '10px 16px',
-                borderBottom: '1px solid #e4e4e7',
+                padding: '12px 16px',
+                borderBottom: '1px solid var(--border-color)',
                 fontWeight: 600,
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                background: 'var(--fill-quaternary, #f9fafb)'
               }}
             >
-              <span style={{ color: '#18181b' }}>出题面板</span>
+              <span style={{ color: 'var(--text-primary)', fontSize: 13 }}>出题面板</span>
+              <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
+                {sections.reduce((s, sec) => s + sec.questions.length, 0)} 道题
+              </span>
             </div>
             <div style={{ padding: 12 }}>
               <Collapse
@@ -915,7 +936,7 @@ const ExamBuilder: React.FC = () => {
                         placeholder="描述"
                         style={{ width: 110 }}
                       />
-                      <span style={{ color: '#a1a1aa', fontSize: 12 }}>
+                      <span style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>
                         {section.questions.reduce((s, q) => s + q.score, 0)}分
                       </span>
                     </Space>
@@ -952,19 +973,19 @@ const ExamBuilder: React.FC = () => {
                               padding: '5px 8px',
                               borderRadius: 6,
                               cursor: 'pointer',
-                              background: activeQuestionId === q.id ? '#ecfdf5' : '#fafafa',
+                              background: activeQuestionId === q.id ? 'var(--primary-light)' : 'var(--fill-quaternary, #fafafa)',
                               border:
                                 activeQuestionId === q.id
                                   ? '1px solid #6ee7b7'
-                                  : '1px solid #e4e4e7'
+                                  : '1px solid var(--border-color)'
                             }}
                           >
-                            <MenuOutlined style={{ color: '#d4d4d8' }} />
+                            <MenuOutlined style={{ color: 'var(--text-tertiary)' }} />
                             <span
                               style={{
                                 fontWeight: 600,
                                 fontSize: 12,
-                                color: '#52525b'
+                                color: 'var(--text-secondary)'
                               }}
                             >
                               {idx + 1}.
@@ -974,8 +995,8 @@ const ExamBuilder: React.FC = () => {
                                 fontSize: 11,
                                 padding: '1px 6px',
                                 borderRadius: 4,
-                                background: '#f4f4f5',
-                                color: '#71717a'
+                                background: 'var(--fill-tertiary, #f4f4f5)',
+                                color: 'var(--text-secondary)'
                               }}
                             >
                               {QUESTION_TYPE_LABELS[q.type]}
@@ -987,14 +1008,14 @@ const ExamBuilder: React.FC = () => {
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                color: '#52525b'
+                                color: 'var(--text-secondary)'
                               }}
                             >
                               {q.content
                                 ? q.content.replace(/\$[^$]*\$/g, '[公式]').slice(0, 25)
                                 : '（空题目）'}
                             </span>
-                            <span style={{ fontSize: 11, color: '#a1a1aa' }}>{q.score}分</span>
+                            <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{q.score}分</span>
                             <Popconfirm
                               title="删除？"
                               onConfirm={(e) => {

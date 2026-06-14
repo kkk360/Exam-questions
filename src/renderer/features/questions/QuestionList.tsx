@@ -101,7 +101,9 @@ const QuestionList: React.FC = () => {
       dataIndex: 'type',
       width: 90,
       render: (type: string) => (
-        <Tag color={QUESTION_TYPE_COLORS[type]}>{QUESTION_TYPE_LABELS[type]}</Tag>
+        <Tag color={QUESTION_TYPE_COLORS[type]} style={{ borderRadius: 4 }}>
+          {QUESTION_TYPE_LABELS[type]}
+        </Tag>
       )
     },
     {
@@ -109,57 +111,53 @@ const QuestionList: React.FC = () => {
       dataIndex: 'content',
       ellipsis: true,
       render: (content: string) => (
-        <span style={{ color: '#52525b' }}>{truncateContent(content)}</span>
+        <span style={{ color: 'var(--text-primary)', fontSize: 13 }}>{truncateContent(content)}</span>
       )
     },
     {
       title: '学科',
       dataIndex: 'subject',
       width: 80,
-      render: (subject: string) => subject || '-'
+      render: (subject: string) => (
+        <span style={{ color: 'var(--text-secondary)' }}>{subject || '-'}</span>
+      )
     },
     {
       title: '难度',
       dataIndex: 'difficulty',
-      width: 140,
+      width: 130,
       render: (difficulty: number) => (
-        <Rate disabled defaultValue={difficulty} count={5} style={{ fontSize: 14 }} />
+        <Rate disabled defaultValue={difficulty} count={5} style={{ fontSize: 13 }} />
       )
     },
     {
       title: '标签',
       dataIndex: 'tags',
-      width: 180,
+      width: 160,
       render: (tags: string[]) => (
         <Space size={[0, 4]} wrap>
-          {tags.slice(0, 3).map((tag) => (
-            <Tag key={tag} style={{ margin: 0 }}>
+          {tags.slice(0, 2).map((tag) => (
+            <Tag key={tag} style={{ margin: 0, borderRadius: 4 }}>
               {tag}
             </Tag>
           ))}
-          {tags.length > 3 && <Tag>+{tags.length - 3}</Tag>}
+          {tags.length > 2 && <Tag style={{ borderRadius: 4 }}>+{tags.length - 2}</Tag>}
         </Space>
       )
     },
     {
-      title: '分值',
-      dataIndex: 'score',
-      width: 60,
-      render: (score: number) => score || '-'
-    },
-    {
       title: '操作',
-      width: 150,
+      width: 140,
       render: (_: any, record: Question) => (
-        <Space size="small">
+        <Space size={2}>
           <Button
-            type="link"
+            type="text"
             size="small"
             icon={<EyeOutlined />}
             onClick={() => navigate(`/questions/${record.id}`)}
           />
           <Button
-            type="link"
+            type="text"
             size="small"
             icon={<EditOutlined />}
             onClick={() => navigate(`/questions/${record.id}/edit`)}
@@ -171,7 +169,7 @@ const QuestionList: React.FC = () => {
             cancelText="取消"
             okButtonProps={{ danger: true }}
           >
-            <Button type="link" size="small" danger icon={<DeleteOutlined />} />
+            <Button type="text" size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
       )
@@ -179,89 +177,98 @@ const QuestionList: React.FC = () => {
   ]
 
   return (
-    <Card
-      title="题库管理"
-      extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/questions/new')}>
-          新建题目
-        </Button>
-      }
-    >
-      <Space style={{ marginBottom: 16 }} wrap>
-        <Select
-          placeholder="题型"
-          allowClear
-          style={{ width: 120 }}
-          onChange={(v) => handleFilterChange('type', v)}
-          value={filters.type}
-        >
-          {Object.entries(QUESTION_TYPE_LABELS).map(([key, label]) => (
-            <Option key={key} value={key}>
-              {label}
-            </Option>
-          ))}
-        </Select>
-        <Select
-          placeholder="难度"
-          allowClear
-          style={{ width: 100 }}
-          onChange={(v) => handleFilterChange('difficulty', v)}
-          value={filters.difficulty}
-        >
-          {Object.entries(DIFFICULTY_LABELS).map(([key, label]) => (
-            <Option key={key} value={Number(key)}>
-              {label}
-            </Option>
-          ))}
-        </Select>
-        <Input
-          placeholder="搜索关键词..."
-          prefix={<SearchOutlined />}
-          allowClear
-          style={{ width: 200 }}
-          onChange={(e) => handleFilterChange('keyword', e.target.value)}
-          value={filters.keyword}
-        />
-        {selectedRowKeys.length > 0 && (
-          <>
-            <Popconfirm
-              title={`确认删除选中的 ${selectedRowKeys.length} 道题目？`}
-              onConfirm={handleBatchDelete}
-              okText="删除"
-              cancelText="取消"
-              okButtonProps={{ danger: true }}
-            >
-              <Button danger icon={<DeleteOutlined />}>
-                批量删除 ({selectedRowKeys.length})
+    <div>
+      <div className="page-header">
+        <div>
+          <h2>题库管理</h2>
+          <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 2 }}>
+            管理和组织您的题目资源
+          </div>
+        </div>
+        <Space>
+          {selectedRowKeys.length > 0 && (
+            <>
+              <Popconfirm
+                title={`确认删除选中的 ${selectedRowKeys.length} 道题目？`}
+                onConfirm={handleBatchDelete}
+                okText="删除"
+                cancelText="取消"
+                okButtonProps={{ danger: true }}
+              >
+                <Button danger icon={<DeleteOutlined />}>
+                  批量删除 ({selectedRowKeys.length})
+                </Button>
+              </Popconfirm>
+              <Button icon={<ExportOutlined />} onClick={handleExport}>
+                导出选中
               </Button>
-            </Popconfirm>
-            <Button icon={<ExportOutlined />} onClick={handleExport}>
-              导出选中
-            </Button>
-          </>
-        )}
-      </Space>
+            </>
+          )}
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/questions/new')}>
+            新建题目
+          </Button>
+        </Space>
+      </div>
 
-      <Table
-        rowKey="id"
-        columns={columns}
-        dataSource={questions}
-        loading={loading}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: setSelectedRowKeys
-        }}
-        pagination={{
-          current: currentPage,
-          pageSize,
-          total: questions.length,
-          onChange: setCurrentPage,
-          showSizeChanger: false,
-          showTotal: (total) => `共 ${total} 道题目`
-        }}
-        size="middle"
-      />
-    </Card>
+      <Card style={{ marginBottom: 0 }}>
+        <Space style={{ marginBottom: 16 }} wrap size="middle">
+          <Input
+            placeholder="搜索题目内容..."
+            prefix={<SearchOutlined style={{ color: 'var(--text-tertiary)' }} />}
+            allowClear
+            style={{ width: 240 }}
+            onChange={(e) => handleFilterChange('keyword', e.target.value)}
+            value={filters.keyword}
+          />
+          <Select
+            placeholder="题型筛选"
+            allowClear
+            style={{ width: 130 }}
+            onChange={(v) => handleFilterChange('type', v)}
+            value={filters.type}
+          >
+            {Object.entries(QUESTION_TYPE_LABELS).map(([key, label]) => (
+              <Option key={key} value={key}>
+                {label}
+              </Option>
+            ))}
+          </Select>
+          <Select
+            placeholder="难度筛选"
+            allowClear
+            style={{ width: 120 }}
+            onChange={(v) => handleFilterChange('difficulty', v)}
+            value={filters.difficulty}
+          >
+            {Object.entries(DIFFICULTY_LABELS).map(([key, label]) => (
+              <Option key={key} value={Number(key)}>
+                {label}
+              </Option>
+            ))}
+          </Select>
+        </Space>
+
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={questions}
+          loading={loading}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: setSelectedRowKeys
+          }}
+          pagination={{
+            current: currentPage,
+            pageSize,
+            total: questions.length,
+            onChange: setCurrentPage,
+            showSizeChanger: false,
+            showTotal: (total) => `共 ${total} 道题目`
+          }}
+          size="middle"
+        />
+      </Card>
+    </div>
   )
 }
 

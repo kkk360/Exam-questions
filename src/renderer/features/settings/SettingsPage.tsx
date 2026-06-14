@@ -1,12 +1,33 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Button, Space, App, Divider, Select, Rate, Switch, Descriptions } from 'antd'
-import { ImportOutlined, ExportOutlined, FolderOpenOutlined } from '@ant-design/icons'
+import {
+  Card,
+  Button,
+  Space,
+  App,
+  Select,
+  Rate,
+  Switch,
+  Descriptions,
+  Row,
+  Col
+} from 'antd'
+import {
+  ImportOutlined,
+  ExportOutlined,
+  FolderOpenOutlined,
+  SettingOutlined,
+  DatabaseOutlined,
+  InfoCircleOutlined,
+  BulbOutlined
+} from '@ant-design/icons'
 import type { AppConfig } from '../../types'
+import { useThemeStore } from '../../stores/themeStore'
 
 const SettingsPage: React.FC = () => {
   const { message } = App.useApp()
   const [config, setConfig] = useState<AppConfig | null>(null)
   const [appInfo, setAppInfo] = useState<{ version: string; dataDir: string } | null>(null)
+  const { mode, toggleTheme } = useThemeStore()
 
   useEffect(() => {
     window.electron.system.getConfig().then(setConfig)
@@ -60,78 +81,204 @@ const SettingsPage: React.FC = () => {
     }
   }
 
+  const settingRowStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '12px 16px',
+    background: 'var(--fill-quaternary, #f9fafb)',
+    borderRadius: 8
+  } as const
+
   return (
-    <div style={{ maxWidth: 800 }}>
-      <Card title="数据管理" style={{ borderRadius: 12 }}>
-        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>
-          试卷数据
-        </Divider>
-        <Space>
-          <Button icon={<ImportOutlined />} onClick={handleImportExams}>
-            导入试卷
-          </Button>
-          <Button icon={<ExportOutlined />} onClick={handleExportExams}>
-            导出试卷
-          </Button>
-        </Space>
-      </Card>
+    <div>
+      <div className="page-header">
+        <div>
+          <h2>设置</h2>
+          <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 2 }}>
+            管理应用偏好和数据
+          </div>
+        </div>
+      </div>
 
-      <Card title="偏好设置" style={{ marginTop: 16, borderRadius: 12 }}>
-        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-          <div>
-            <div style={{ marginBottom: 8, fontWeight: 500, color: '#52525b' }}>默认学科</div>
-            <Select
-              placeholder="选择默认学科"
-              allowClear
-              style={{ width: 200 }}
-              value={config?.preferences.defaultSubject || undefined}
-              onChange={(v) => updatePreference('defaultSubject', v)}
-              options={[
-                { value: '数学' },
-                { value: '物理' },
-                { value: '化学' },
-                { value: '生物' },
-                { value: '语文' },
-                { value: '英语' }
-              ]}
-            />
-          </div>
-          <div>
-            <div style={{ marginBottom: 8, fontWeight: 500, color: '#52525b' }}>默认难度</div>
-            <Rate
-              value={config?.preferences.defaultDifficulty || 3}
-              onChange={(v) => updatePreference('defaultDifficulty', v)}
-            />
-          </div>
-          <div>
-            <div style={{ marginBottom: 8, fontWeight: 500, color: '#52525b' }}>LaTeX 实时预览</div>
-            <Switch
-              checked={config?.preferences.latexPreviewEnabled ?? true}
-              onChange={(v) => updatePreference('latexPreviewEnabled', v)}
-            />
-          </div>
-        </Space>
-      </Card>
+      <Row gutter={20}>
+        <Col span={14}>
+          <Card
+            title={
+              <Space>
+                <SettingOutlined style={{ color: 'var(--primary-color)' }} />
+                <span>偏好设置</span>
+              </Space>
+            }
+            style={{ marginBottom: 16 }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={settingRowStyle}>
+                <div>
+                  <div style={{ fontWeight: 500, color: 'var(--text-primary)', fontSize: 13 }}>
+                    外观模式
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                    切换亮色 / 暗黑主题
+                  </div>
+                </div>
+                <Space>
+                  <BulbOutlined style={{ color: mode === 'dark' ? '#fbbf24' : 'var(--text-tertiary)' }} />
+                  <Switch
+                    checked={mode === 'dark'}
+                    onChange={toggleTheme}
+                    checkedChildren="暗"
+                    unCheckedChildren="亮"
+                  />
+                </Space>
+              </div>
 
-      <Card title="关于" style={{ marginTop: 16, borderRadius: 12 }}>
-        <Descriptions column={1}>
-          <Descriptions.Item label="应用名称">智能出题系统</Descriptions.Item>
-          <Descriptions.Item label="版本号">{appInfo?.version || '-'}</Descriptions.Item>
-          <Descriptions.Item label="数据目录">
-            <Space>
-              <span style={{ fontSize: 12, color: '#71717a' }}>{appInfo?.dataDir || '-'}</span>
-              <Button
-                type="link"
-                size="small"
-                icon={<FolderOpenOutlined />}
-                onClick={handleOpenDataDir}
-              >
-                打开
+              <div style={settingRowStyle}>
+                <div>
+                  <div style={{ fontWeight: 500, color: 'var(--text-primary)', fontSize: 13 }}>
+                    默认学科
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                    新建题目时的默认学科
+                  </div>
+                </div>
+                <Select
+                  placeholder="选择默认学科"
+                  allowClear
+                  style={{ width: 160 }}
+                  value={config?.preferences.defaultSubject || undefined}
+                  onChange={(v) => updatePreference('defaultSubject', v)}
+                  options={[
+                    { value: '数学' },
+                    { value: '物理' },
+                    { value: '化学' },
+                    { value: '生物' },
+                    { value: '语文' },
+                    { value: '英语' }
+                  ]}
+                />
+              </div>
+
+              <div style={settingRowStyle}>
+                <div>
+                  <div style={{ fontWeight: 500, color: 'var(--text-primary)', fontSize: 13 }}>
+                    默认难度
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                    新建题目时的默认难度等级
+                  </div>
+                </div>
+                <Rate
+                  value={config?.preferences.defaultDifficulty || 3}
+                  onChange={(v) => updatePreference('defaultDifficulty', v)}
+                />
+              </div>
+
+              <div style={settingRowStyle}>
+                <div>
+                  <div style={{ fontWeight: 500, color: 'var(--text-primary)', fontSize: 13 }}>
+                    LaTeX 实时预览
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                    输入公式时实时渲染预览
+                  </div>
+                </div>
+                <Switch
+                  checked={config?.preferences.latexPreviewEnabled ?? true}
+                  onChange={(v) => updatePreference('latexPreviewEnabled', v)}
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card
+            title={
+              <Space>
+                <DatabaseOutlined style={{ color: 'var(--primary-color)' }} />
+                <span>数据管理</span>
+              </Space>
+            }
+          >
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Button icon={<ImportOutlined />} onClick={handleImportExams} size="large" style={{ flex: 1 }}>
+                导入试卷
               </Button>
-            </Space>
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
+              <Button icon={<ExportOutlined />} onClick={handleExportExams} size="large" style={{ flex: 1 }}>
+                导出试卷
+              </Button>
+            </div>
+          </Card>
+        </Col>
+
+        <Col span={10}>
+          <Card
+            title={
+              <Space>
+                <InfoCircleOutlined style={{ color: 'var(--primary-color)' }} />
+                <span>关于</span>
+              </Space>
+            }
+          >
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '20px 0'
+              }}
+            >
+              <div
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 14,
+                  background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 16
+                }}
+              >
+                <SettingOutlined style={{ color: '#fff', fontSize: 28 }} />
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+                智能出题系统
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 20 }}>
+                Smart Exam Builder
+              </div>
+
+              <Descriptions
+                column={1}
+                size="small"
+                style={{ width: '100%' }}
+                labelStyle={{ color: 'var(--text-secondary)', width: 80 }}
+                contentStyle={{ color: 'var(--text-primary)' }}
+              >
+                <Descriptions.Item label="版本号">
+                  {appInfo?.version || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label="数据目录">
+                  <Space direction="vertical" size={2}>
+                    <span style={{ fontSize: 12, color: 'var(--text-secondary)', wordBreak: 'break-all' }}>
+                      {appInfo?.dataDir || '-'}
+                    </span>
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<FolderOpenOutlined />}
+                      onClick={handleOpenDataDir}
+                      style={{ padding: 0, height: 'auto' }}
+                    >
+                      打开目录
+                    </Button>
+                  </Space>
+                </Descriptions.Item>
+              </Descriptions>
+            </div>
+          </Card>
+        </Col>
+      </Row>
     </div>
   )
 }

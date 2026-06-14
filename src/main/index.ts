@@ -13,6 +13,7 @@ function createWindow(): void {
     minHeight: 600,
     show: false,
     title: '智能出题系统',
+    icon: join(__dirname, '../../resources/favicon.ico'),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

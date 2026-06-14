@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
   Card,
   Button,
@@ -11,7 +11,10 @@ import {
   Row,
   Col,
   Radio,
-  Tooltip
+  Tooltip,
+  Modal,
+  Progress,
+  Typography
 } from 'antd'
 import {
   ImportOutlined,
@@ -26,10 +29,15 @@ import {
   QuestionCircleOutlined,
   GithubOutlined,
   MailOutlined,
-  UserOutlined
+  UserOutlined,
+  CloudDownloadOutlined,
+  CheckCircleOutlined,
+  LoadingOutlined
 } from '@ant-design/icons'
-import type { AppConfig } from '../../types'
+import type { AppConfig, UpdateInfo, UpdateProgress } from '../../types'
 import { useThemeStore } from '../../stores/themeStore'
+
+const { Text, Paragraph } = Typography
 
 const SettingsPage: React.FC = () => {
   const { message } = App.useApp()
@@ -37,11 +45,69 @@ const SettingsPage: React.FC = () => {
   const [appInfo, setAppInfo] = useState<{ version: string; dataDir: string } | null>(null)
   const { mode, toggleTheme } = useThemeStore()
   const [importMode, setImportMode] = useState<'append' | 'overwrite'>('append')
+  const [autoUpdateEnabled, setAutoUpdateEnabled] = useState(true)
+  const [updateChecking, setUpdateChecking] = useState(false)
+  const [updateModalOpen, setUpdateModalOpen] = useState(false)
+  const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null)
+  const [updateProgress, setUpdateProgress] = useState<UpdateProgress | null>(null)
+  const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'available' | 'downloading' | 'downloaded' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     window.electron.system.getConfig().then(setConfig)
     window.electron.system.getAppInfo().then(setAppInfo)
+    window.electron.updater.getConfig().then((c) => setAutoUpdateEnabled(c.autoUpdateEnabled))
   }, [])
+
+  useEffect(() => {
+    const handleChecking = () => {
+      setUpdateChecking(true)
+      setUpdateStatus('checking')
+    }
+
+    const handleAvailable = (info: UpdateInfo) => {
+      setUpdateChecking(false)
+      setUpdateInfo(info)
+      setUpdateStatus('available')
+      setUpdateModalOpen(true)
+    }
+
+    const handleNotAvailable = () => {
+      setUpdateChecking(false)
+      setUpdateStatus('idle')
+      message.info('当前已是最新版本')
+    }
+
+    const handleProgress = (progress: UpdateProgress) => {
+      setUpdateProgress(progress)
+      setUpdateStatus('downloading')
+    }
+
+    const handleDownloaded = () => {
+      setUpdateStatus('downloaded')
+      setUpdateProgress(null)
+    }
+
+    const handleError = (msg: string) => {
+      setUpdateChecking(false)
+      setUpdateStatus('error')
+      setErrorMsg(msg)
+      message.error(`更新出错: ${msg}`)
+    }
+
+    const handleDisabled = () => {
+      setUpdateChecking(false)
+      message.info('自动更新已关闭')
+    }
+
+    window.electron.updater.onChecking(handleChecking)
+    window.electron.updater.onAvailable(handleAvailable)
+    window.electron.updater.onNotAvailable(handleNotAvailable)
+    window.electron.updater.onProgress(handleProgress)
+    window.electron.updater.onDownloaded(handleDownloaded)
+    window.electron.updater.onError(handleError)
+    window.electron.updater.onDisabled(handleDisabled)
+  }, [message])
 
   const updatePreference = async (key: string, value: any) => {
     if (!config) return
@@ -51,6 +117,27 @@ const SettingsPage: React.FC = () => {
     setConfig(updated)
     message.success('设置已保存')
   }
+
+  const handleToggleAutoUpdate = async (checked: boolean) => {
+    setAutoUpdateEnabled(checked)
+    await window.electron.updater.setEnabled(checked)
+    message.success(checked ? '已开启自动更新检查' : '已关闭自动更新检查')
+  }
+
+  const handleCheckUpdate = useCallback(async () => {
+    setUpdateChecking(true)
+    setErrorMsg('')
+    await window.electron.updater.check(true)
+  }, [])
+
+  const handleDownload = useCallback(async () => {
+    setUpdateStatus('downloading')
+    await window.electron.updater.download()
+  }, [])
+
+  const handleInstall = useCallback(() => {
+    window.electron.updater.install()
+  }, [])
 
   const handleImportExams = async () => {
     try {
@@ -90,6 +177,14 @@ const SettingsPage: React.FC = () => {
     if (appInfo?.dataDir) {
       await window.electron.system.openPath(appInfo.dataDir)
     }
+  }
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B'
+    const k = 1024
+    const sizes = ['B', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
   const settingRowStyle = {
@@ -197,6 +292,21 @@ const SettingsPage: React.FC = () => {
                 <Switch
                   checked={config?.preferences.latexPreviewEnabled ?? true}
                   onChange={(v) => updatePreference('latexPreviewEnabled', v)}
+                />
+              </div>
+
+              <div style={settingRowStyle}>
+                <div>
+                  <div style={{ fontWeight: 500, color: 'var(--text-primary)', fontSize: 13 }}>
+                    自动更新检查
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                    启动时自动检查新版本
+                  </div>
+                </div>
+                <Switch
+                  checked={autoUpdateEnabled}
+                  onChange={handleToggleAutoUpdate}
                 />
               </div>
             </div>
@@ -340,10 +450,118 @@ const SettingsPage: React.FC = () => {
                   </Space>
                 </Descriptions.Item>
               </Descriptions>
+
+              <Button
+                type="primary"
+                icon={updateChecking ? <LoadingOutlined /> : <CloudDownloadOutlined />}
+                loading={updateChecking}
+                onClick={handleCheckUpdate}
+                style={{ marginTop: 16, width: '100%' }}
+              >
+                {updateChecking ? '检查中...' : '检查更新'}
+              </Button>
             </div>
           </Card>
         </Col>
       </Row>
+
+      <Modal
+        title={
+          <Space>
+            <CloudDownloadOutlined style={{ color: 'var(--primary-color)' }} />
+            <span>发现新版本</span>
+          </Space>
+        }
+        open={updateModalOpen}
+        onCancel={() => {
+          if (updateStatus !== 'downloading') {
+            setUpdateModalOpen(false)
+            setUpdateStatus('idle')
+            setUpdateProgress(null)
+          }
+        }}
+        footer={null}
+        maskClosable={updateStatus !== 'downloading'}
+        closable={updateStatus !== 'downloading'}
+        width={480}
+      >
+        {updateInfo && (
+          <div style={{ padding: '16px 0' }}>
+            <div style={{ marginBottom: 16 }}>
+              <Text strong style={{ fontSize: 16 }}>v{updateInfo.version}</Text>
+              <Text type="secondary" style={{ marginLeft: 8 }}>
+                {new Date(updateInfo.releaseDate).toLocaleDateString('zh-CN')}
+              </Text>
+            </div>
+
+            <Card size="small" style={{ marginBottom: 16, background: 'var(--fill-quaternary)' }}>
+              <div style={{ fontSize: 13, fontWeight: 500, marginBottom: 8 }}>更新内容：</div>
+              <Paragraph
+                style={{ margin: 0, fontSize: 13, whiteSpace: 'pre-wrap' }}
+                ellipsis={{ rows: 6, expandable: true, symbol: '展开' }}
+              >
+                {updateInfo.releaseNotes}
+              </Paragraph>
+            </Card>
+
+            {updateStatus === 'downloading' && updateProgress && (
+              <div style={{ marginBottom: 16 }}>
+                <Progress
+                  percent={Math.round(updateProgress.percent)}
+                  status="active"
+                  format={(percent) => `${percent}%`}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-tertiary)', marginTop: 4 }}>
+                  <span>{formatBytes(updateProgress.transferred)} / {formatBytes(updateProgress.total)}</span>
+                  <span>{formatBytes(updateProgress.bytesPerSecond)}/s</span>
+                </div>
+              </div>
+            )}
+
+            {updateStatus === 'downloaded' && (
+              <div style={{ textAlign: 'center', padding: '16px 0' }}>
+                <CheckCircleOutlined style={{ fontSize: 48, color: '#52c41a', marginBottom: 16 }} />
+                <div style={{ fontSize: 14, marginBottom: 8 }}>下载完成</div>
+                <Text type="secondary">点击安装按钮将重启应用并完成更新</Text>
+              </div>
+            )}
+
+            {updateStatus === 'error' && (
+              <div style={{ textAlign: 'center', padding: '16px 0', color: '#ff4d4f' }}>
+                <div style={{ fontSize: 14, marginBottom: 8 }}>更新失败</div>
+                <Text type="danger">{errorMsg}</Text>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+              {updateStatus === 'available' && (
+                <>
+                  <Button onClick={() => setUpdateModalOpen(false)}>稍后更新</Button>
+                  <Button type="primary" icon={<CloudDownloadOutlined />} onClick={handleDownload}>
+                    立即下载
+                  </Button>
+                </>
+              )}
+              {updateStatus === 'downloading' && (
+                <Button type="primary" loading disabled>
+                  下载中...
+                </Button>
+              )}
+              {updateStatus === 'downloaded' && (
+                <Button type="primary" icon={<SyncOutlined />} onClick={handleInstall}>
+                  立即安装并重启
+                </Button>
+              )}
+              {updateStatus === 'error' && (
+                <>
+                  <Button onClick={() => setUpdateModalOpen(false)}>关闭</Button>
+                  <Button type="primary" onClick={handleCheckUpdate}>重试</Button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

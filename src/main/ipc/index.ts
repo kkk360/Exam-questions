@@ -6,6 +6,13 @@ import * as importExportService from '../services/import-export.service'
 import { exportToPdf, exportAnswerKeyToPdf } from '../services/export-pdf.service'
 import { exportToWord } from '../services/export-word.service'
 import { getConfig, saveConfig } from '../storage/store'
+import {
+  checkForUpdates,
+  downloadUpdate,
+  installUpdate,
+  getUpdateConfig,
+  setAutoUpdateEnabled
+} from '../services/updater.service'
 
 export function registerAllHandlers(): void {
   // ========== Question handlers ==========
@@ -165,5 +172,27 @@ export function registerAllHandlers(): void {
 
   ipcMain.handle('system:openPath', async (_event, path: string) => {
     shell.openPath(path)
+  })
+
+  // ========== Updater handlers ==========
+  ipcMain.handle('updater:check', async (_event, manual: boolean) => {
+    await checkForUpdates(manual)
+  })
+
+  ipcMain.handle('updater:download', async () => {
+    await downloadUpdate()
+  })
+
+  ipcMain.handle('updater:install', () => {
+    installUpdate()
+  })
+
+  ipcMain.handle('updater:getConfig', () => {
+    return getUpdateConfig()
+  })
+
+  ipcMain.handle('updater:setEnabled', (_event, enabled: boolean) => {
+    setAutoUpdateEnabled(enabled)
+    return { autoUpdateEnabled: enabled }
   })
 }

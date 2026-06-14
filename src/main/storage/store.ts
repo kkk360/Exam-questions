@@ -72,6 +72,7 @@ interface AppConfig {
     recentTags: string[]
     recentSubjects: string[]
     latexPreviewEnabled: boolean
+    autoUpdateEnabled?: boolean
   }
 }
 

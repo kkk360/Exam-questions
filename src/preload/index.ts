@@ -53,6 +53,34 @@ const electronAPI = {
     updateConfig: (partial: any) => ipcRenderer.invoke('system:updateConfig', partial),
     selectDirectory: () => ipcRenderer.invoke('system:selectDirectory'),
     openPath: (path: string) => ipcRenderer.invoke('system:openPath', path)
+  },
+  updater: {
+    check: (manual: boolean) => ipcRenderer.invoke('updater:check', manual),
+    download: () => ipcRenderer.invoke('updater:download'),
+    install: () => ipcRenderer.invoke('updater:install'),
+    getConfig: () => ipcRenderer.invoke('updater:getConfig'),
+    setEnabled: (enabled: boolean) => ipcRenderer.invoke('updater:setEnabled', enabled),
+    onChecking: (cb: () => void) => {
+      ipcRenderer.on('updater:checking', () => cb())
+    },
+    onAvailable: (cb: (info: any) => void) => {
+      ipcRenderer.on('updater:available', (_e, info) => cb(info))
+    },
+    onNotAvailable: (cb: () => void) => {
+      ipcRenderer.on('updater:not-available', () => cb())
+    },
+    onProgress: (cb: (progress: any) => void) => {
+      ipcRenderer.on('updater:progress', (_e, progress) => cb(progress))
+    },
+    onDownloaded: (cb: () => void) => {
+      ipcRenderer.on('updater:downloaded', () => cb())
+    },
+    onError: (cb: (message: string) => void) => {
+      ipcRenderer.on('updater:error', (_e, message) => cb(message))
+    },
+    onDisabled: (cb: () => void) => {
+      ipcRenderer.on('updater:disabled', () => cb())
+    }
   }
 }
 

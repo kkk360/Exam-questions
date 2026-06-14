@@ -4,6 +4,7 @@ import { is } from '@electron-toolkit/utils'
 import { registerAllHandlers } from './ipc'
 import { initStore } from './storage/store'
 import { seedDemoData } from './seed-demo'
+import { initAutoUpdater, setMainWindow, checkForUpdates } from './services/updater.service'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -35,6 +36,8 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  setMainWindow(mainWindow)
 }
 
 app.whenReady().then(() => {
@@ -42,10 +45,15 @@ app.whenReady().then(() => {
   seedDemoData()
   registerAllHandlers()
   createWindow()
+  initAutoUpdater()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  setTimeout(() => {
+    checkForUpdates(false)
+  }, 5000)
 })
 
 app.on('window-all-closed', () => {

@@ -47,6 +47,20 @@ export interface ElectronAPI {
     selectDirectory: () => Promise<string | null>
     openPath: (path: string) => Promise<void>
   }
+  updater: {
+    check: (manual: boolean) => Promise<void>
+    download: () => Promise<void>
+    install: () => void
+    getConfig: () => Promise<{ autoUpdateEnabled: boolean }>
+    setEnabled: (enabled: boolean) => Promise<{ autoUpdateEnabled: boolean }>
+    onChecking: (cb: () => void) => void
+    onAvailable: (cb: (info: UpdateInfo) => void) => void
+    onNotAvailable: (cb: () => void) => void
+    onProgress: (cb: (progress: UpdateProgress) => void) => void
+    onDownloaded: (cb: () => void) => void
+    onError: (cb: (message: string) => void) => void
+    onDisabled: (cb: () => void) => void
+  }
 }
 
 declare global {
@@ -137,7 +151,21 @@ export interface AppConfig {
     recentTags: string[]
     recentSubjects: string[]
     latexPreviewEnabled: boolean
+    autoUpdateEnabled?: boolean
   }
+}
+
+export interface UpdateInfo {
+  version: string
+  releaseDate: string
+  releaseNotes: string
+}
+
+export interface UpdateProgress {
+  percent: number
+  bytesPerSecond: number
+  transferred: number
+  total: number
 }
 
 export interface QuestionFilters {

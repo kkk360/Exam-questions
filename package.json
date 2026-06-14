@@ -1,6 +1,6 @@
 {
   "name": "smart-exam-system",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "智能出题系统 - 教师桌面端应用",
   "main": "./out/main/index.js",
   "author": "wangkai <wangkaicode@foxmail.com>",

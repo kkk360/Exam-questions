@@ -60,7 +60,7 @@ const ExamPreview: React.FC = () => {
   }
 
   if (!exam) {
-    return <Card>试卷不存在</Card>
+    return <Card style={{ borderRadius: 12 }}>试卷不存在</Card>
   }
 
   let globalIndex = 0
@@ -86,28 +86,28 @@ const ExamPreview: React.FC = () => {
         {/* A4 paper simulation */}
         <div
           style={{
-            maxWidth: 794, // A4 width at 96dpi
+            maxWidth: 794,
             margin: '0 auto',
-            background: '#fff',
+            background: '#ffffff',
             padding: '60px 50px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            boxShadow: '0 4px 12px rgb(24 24 27 / 0.08)',
             fontFamily: '"SimSun", "宋体", serif',
             lineHeight: 1.8,
             color: '#000'
           }}
         >
           {/* Header */}
-          <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: 20, marginBottom: 20 }}>
+          <div style={{ textAlign: 'center', borderBottom: '2px solid #18181b', paddingBottom: 20, marginBottom: 20 }}>
             {exam.schoolName && (
-              <div style={{ fontSize: 14, color: '#333', marginBottom: 4 }}>{exam.schoolName}</div>
+              <div style={{ fontSize: 14, color: '#52525b', marginBottom: 4 }}>{exam.schoolName}</div>
             )}
             <h1 style={{ fontSize: 22, fontWeight: 'bold', margin: '8px 0', fontFamily: '"SimHei", "黑体", sans-serif' }}>
               {exam.title}
             </h1>
             {exam.subtitle && (
-              <div style={{ fontSize: 14, color: '#333', marginBottom: 4 }}>{exam.subtitle}</div>
+              <div style={{ fontSize: 14, color: '#52525b', marginBottom: 4 }}>{exam.subtitle}</div>
             )}
-            <div style={{ fontSize: 12, color: '#666', marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: '#71717a', marginTop: 8 }}>
               考试时间：{exam.duration}分钟 | 满分：{exam.totalScore}分
             </div>
             <div style={{ fontSize: 12, marginTop: 12, display: 'flex', justifyContent: 'center', gap: 40 }}>
@@ -129,7 +129,7 @@ const ExamPreview: React.FC = () => {
                 {section.title}
               </h2>
               {section.description && (
-                <div style={{ fontSize: 12, color: '#666', marginBottom: 12 }}>{section.description}</div>
+                <div style={{ fontSize: 12, color: '#71717a', marginBottom: 12 }}>{section.description}</div>
               )}
 
               {section.questions.map((sq) => {
@@ -144,7 +144,7 @@ const ExamPreview: React.FC = () => {
                       <div style={{ flex: 1 }}>
                         <RichContent content={question.content} />
                       </div>
-                      <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 11, color: '#a1a1aa', whiteSpace: 'nowrap' }}>
                         （{sq.points}分）
                       </span>
                     </div>
@@ -180,7 +180,7 @@ const ExamPreview: React.FC = () => {
                         marginLeft: 28,
                         marginTop: 8,
                         minHeight: 100,
-                        border: '1px dashed #ccc'
+                        border: '1px dashed #d4d4d8'
                       }} />
                     )}
                   </div>

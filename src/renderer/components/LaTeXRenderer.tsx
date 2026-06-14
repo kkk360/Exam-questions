@@ -69,7 +69,7 @@ function renderSegment(segment: Segment): React.ReactNode {
     return (
       <span
         key={segment.value}
-        style={{ color: '#ff4d4f', background: '#fff2f0', padding: '0 4px', borderRadius: 2 }}
+        style={{ color: '#ef4444', background: '#fef2f2', padding: '0 4px', borderRadius: 4 }}
       >
         {segment.type === 'display' ? `$$${segment.value}$$` : `$${segment.value}$`}
       </span>

@@ -93,9 +93,10 @@ const ExamList: React.FC = () => {
             <Card
               hoverable
               style={{ height: '100%' }}
+              onClick={() => navigate(`/exams/${exam.id}/edit`)}
               actions={[
-                <EditOutlined key="edit" onClick={() => navigate(`/exams/${exam.id}/edit`)} />,
-                <CopyOutlined key="copy" onClick={() => handleDuplicate(exam.id)} />,
+                <EditOutlined key="edit" onClick={(e) => { e.stopPropagation(); navigate(`/exams/${exam.id}/edit`) }} />,
+                <CopyOutlined key="copy" onClick={(e) => { e.stopPropagation(); handleDuplicate(exam.id) }} />,
                 <Popconfirm
                   key="delete"
                   title="确认删除此试卷？"
@@ -104,16 +105,16 @@ const ExamList: React.FC = () => {
                   cancelText="取消"
                   okButtonProps={{ danger: true }}
                 >
-                  <DeleteOutlined />
-                </Popconfirm>
+                  <DeleteOutlined onClick={(e) => e.stopPropagation()} />
+                </Popconfirm>,
               ]}
             >
               <Card.Meta
                 title={<span style={{ fontSize: 16 }}>{exam.title}</span>}
                 description={
                   <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                    {exam.subject && <Tag color="blue">{exam.subject}</Tag>}
-                    <div style={{ color: '#666', fontSize: 13 }}>
+                    {exam.subject && <Tag color="green">{exam.subject}</Tag>}
+                    <div style={{ color: '#71717a', fontSize: 13 }}>
                       <div>考试时长：{exam.duration} 分钟</div>
                       <div>满分：{exam.totalScore} 分</div>
                       <div>大题数：{exam.sections.length}</div>

@@ -28,6 +28,7 @@ const SymbolToolbar: React.FC<{ onInsert: (latex: string) => void }> = ({ onInse
             size="small"
             type={i === activeGroup ? 'primary' : 'default'}
             onClick={() => setActiveGroup(i)}
+            style={{ borderRadius: 6 }}
           >
             {group.name}
           </Button>
@@ -42,7 +43,8 @@ const SymbolToolbar: React.FC<{ onInsert: (latex: string) => void }> = ({ onInse
               style={{
                 minWidth: 36,
                 fontFamily: 'serif',
-                fontSize: 13
+                fontSize: 13,
+                borderRadius: 6,
               }}
             >
               {sym.label}
@@ -136,18 +138,18 @@ const FormulaEditor: React.FC<FormulaEditorProps> = ({
 
       {showPreview && value && (
         <div
-          className="formula-preview"
           style={{
             marginTop: 8,
             padding: '12px 16px',
             background: '#fafafa',
-            border: '1px solid #d9d9d9',
-            borderRadius: 6,
+            border: '1px solid #e4e4e7',
+            borderRadius: 8,
             minHeight: 48,
-            lineHeight: 1.8
+            lineHeight: 1.8,
+            transition: 'border-color 0.2s, box-shadow 0.2s',
           }}
         >
-          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 4 }}>
+          <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 4, color: '#a1a1aa' }}>
             预览：
           </Text>
           <LaTeXRenderer content={previewContent} />

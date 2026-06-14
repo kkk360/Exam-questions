@@ -1,16 +1,20 @@
 :root {
-  --primary-color: #4f46e5;
-  --primary-hover: #4338ca;
-  --bg-color: #f8fafc;
+  --primary-color: #059669;
+  --primary-hover: #047857;
+  --primary-light: #ecfdf5;
+  --bg-color: #fafafa;
+  --bg-layout: #f4f4f5;
   --sidebar-bg: #ffffff;
   --content-padding: 24px;
-  --border-color: #e2e8f0;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --radius-lg: 12px;
+  --border-color: #e4e4e7;
+  --text-primary: #18181b;
+  --text-secondary: #71717a;
+  --shadow-sm: 0 1px 2px 0 rgb(24 24 27 / 0.04);
+  --shadow-md: 0 4px 6px -1px rgb(24 24 27 / 0.06), 0 2px 4px -2px rgb(24 24 27 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(24 24 27 / 0.08), 0 4px 6px -4px rgb(24 24 27 / 0.04);
+  --radius-sm: 6px;
   --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 * {
@@ -35,6 +39,11 @@ body {
   background: var(--bg-color);
 }
 
+::selection {
+  background: var(--primary-color);
+  color: #ffffff;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -45,12 +54,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d4d4d8;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #a1a1aa;
 }
 
 .katex-display {
@@ -59,12 +68,18 @@ body {
 
 .formula-preview {
   padding: 12px 16px;
-  background: #f8fafc;
+  background: #fafafa;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   min-height: 48px;
   margin-top: 8px;
   line-height: 1.8;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formula-preview:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgb(5 150 105 / 0.1);
 }
 
 @media print {

@@ -61,8 +61,8 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 800 }}>
-      <Card title="数据管理">
-        <Divider titlePlacement="left">试卷数据</Divider>
+        <Card title="数据管理" style={{ borderRadius: 12 }}>
+        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>试卷数据</Divider>
         <Space>
           <Button icon={<ImportOutlined />} onClick={handleImportExams}>
             导入试卷
@@ -73,10 +73,10 @@ const SettingsPage: React.FC = () => {
         </Space>
       </Card>
 
-      <Card title="偏好设置" style={{ marginTop: 16 }}>
+      <Card title="偏好设置" style={{ marginTop: 16, borderRadius: 12 }}>
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div>
-            <div style={{ marginBottom: 8, fontWeight: 500 }}>默认学科</div>
+            <div style={{ marginBottom: 8, fontWeight: 500, color: '#52525b' }}>默认学科</div>
             <Select
               placeholder="选择默认学科"
               allowClear
@@ -90,14 +90,14 @@ const SettingsPage: React.FC = () => {
             />
           </div>
           <div>
-            <div style={{ marginBottom: 8, fontWeight: 500 }}>默认难度</div>
+            <div style={{ marginBottom: 8, fontWeight: 500, color: '#52525b' }}>默认难度</div>
             <Rate
               value={config?.preferences.defaultDifficulty || 3}
               onChange={(v) => updatePreference('defaultDifficulty', v)}
             />
           </div>
           <div>
-            <div style={{ marginBottom: 8, fontWeight: 500 }}>LaTeX 实时预览</div>
+            <div style={{ marginBottom: 8, fontWeight: 500, color: '#52525b' }}>LaTeX 实时预览</div>
             <Switch
               checked={config?.preferences.latexPreviewEnabled ?? true}
               onChange={(v) => updatePreference('latexPreviewEnabled', v)}
@@ -106,13 +106,13 @@ const SettingsPage: React.FC = () => {
         </Space>
       </Card>
 
-      <Card title="关于" style={{ marginTop: 16 }}>
+      <Card title="关于" style={{ marginTop: 16, borderRadius: 12 }}>
         <Descriptions column={1}>
           <Descriptions.Item label="应用名称">智能出题系统</Descriptions.Item>
           <Descriptions.Item label="版本号">{appInfo?.version || '-'}</Descriptions.Item>
           <Descriptions.Item label="数据目录">
             <Space>
-              <span style={{ fontSize: 12, color: '#666' }}>{appInfo?.dataDir || '-'}</span>
+              <span style={{ fontSize: 12, color: '#71717a' }}>{appInfo?.dataDir || '-'}</span>
               <Button
                 type="link"
                 size="small"

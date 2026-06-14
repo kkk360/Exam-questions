@@ -186,7 +186,7 @@ const QuestionEditor: React.FC = () => {
         {/* Choice questions: options */}
         {(questionType === 'single_choice' || questionType === 'multiple_choice') && (
           <>
-            <Divider titlePlacement="left">选项</Divider>
+            <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>选项</Divider>
             <Form.List name="options">
               {(fields, { add, remove }) => (
                 <>
@@ -265,7 +265,7 @@ const QuestionEditor: React.FC = () => {
         {/* Fill-in-the-blank: answers */}
         {questionType === 'fill_blank' && (
           <>
-            <Divider titlePlacement="left">答案</Divider>
+            <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>答案</Divider>
             <Form.List name="blankAnswers">
               {(fields, { add, remove }) => (
                 <>
@@ -297,7 +297,7 @@ const QuestionEditor: React.FC = () => {
           </>
         )}
 
-        <Divider titlePlacement="left">解析与标签</Divider>
+        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>解析与标签</Divider>
 
         <Form.Item
           name="explanation"

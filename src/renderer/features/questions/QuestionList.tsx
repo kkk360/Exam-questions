@@ -102,7 +102,7 @@ const QuestionList: React.FC = () => {
       dataIndex: 'content',
       ellipsis: true,
       render: (content: string) => (
-        <span style={{ color: '#333' }}>{truncateContent(content)}</span>
+        <span style={{ color: '#52525b' }}>{truncateContent(content)}</span>
       )
     },
     {

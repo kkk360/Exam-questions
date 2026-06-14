@@ -49,8 +49,8 @@ const QuestionDetail: React.FC = () => {
 
   if (!question) {
     return (
-      <Card>
-        <div style={{ textAlign: 'center', padding: 50, color: '#999' }}>
+      <Card style={{ borderRadius: 12 }}>
+        <div style={{ textAlign: 'center', padding: 50, color: '#a1a1aa' }}>
           题目不存在
           <br />
           <Button type="link" onClick={() => navigate('/questions')}>返回题库</Button>
@@ -122,14 +122,15 @@ const QuestionDetail: React.FC = () => {
         <Descriptions.Item label="章节" span={2}>{question.chapter || '-'}</Descriptions.Item>
       </Descriptions>
 
-      <Divider titlePlacement="left">题干</Divider>
+        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>题干</Divider>
       <div
         style={{
           padding: 16,
           background: '#fafafa',
-          borderRadius: 6,
-          border: '1px solid #f0f0f0',
-          lineHeight: 1.8
+          borderRadius: 8,
+          border: '1px solid #e4e4e7',
+          lineHeight: 1.8,
+          transition: 'border-color 0.2s, box-shadow 0.2s',
         }}
       >
         <RichContent content={question.content} />
@@ -149,19 +150,21 @@ const QuestionDetail: React.FC = () => {
         </>
       )}
 
-      <Divider titlePlacement="left">正确答案</Divider>
-      <div style={{ padding: '8px 16px', background: '#f6ffed', borderRadius: 6 }}>
-        {renderCorrectAnswer()}
+        <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>正确答案</Divider>
+      <div style={{ padding: '8px 16px', background: '#ecfdf5', borderRadius: 8, border: '1px solid #a7f3d0' }}>
+        <span style={{ color: '#065f46' }}>{renderCorrectAnswer()}</span>
       </div>
 
       {question.explanation && (
         <>
-          <Divider titlePlacement="left">解析</Divider>
+          <Divider titlePlacement="left" style={{ borderColor: '#e4e4e7' }}>解析</Divider>
           <div
             style={{
               padding: 16,
-              background: '#e6f4ff',
-              borderRadius: 6
+              background: '#fafafa',
+              borderRadius: 8,
+              border: '1px solid #e4e4e7',
+              lineHeight: 1.8,
             }}
           >
             <RichContent content={question.explanation} />

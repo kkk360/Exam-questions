@@ -110,8 +110,8 @@ async function main() {
   // 4. 创建 GitHub Release
   console.log('\n[4/5] 创建 GitHub Release...')
   const notes = releaseNotes.trim() || `Release v${newVersion}`
-  const setupExe = join(__dirname, '..', 'dist', `智能出题系统 Setup ${newVersion}.exe`)
-  const blockmap = join(__dirname, '..', 'dist', `智能出题系统 Setup ${newVersion}.exe.blockmap`)
+  const setupExe = join(__dirname, '..', 'dist', `smart-exam-system-${newVersion}.exe`)
+  const blockmap = join(__dirname, '..', 'dist', `smart-exam-system-${newVersion}.exe.blockmap`)
   const latestYml = join(__dirname, '..', 'dist', 'latest.yml')
 
   exec(`gh release create ${tagName} --repo kkk360/Exam-questions --title "智能出题系统 v${newVersion}" --notes "${notes}" "${setupExe}" "${blockmap}" "${latestYml}"`)

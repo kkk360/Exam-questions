@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, globalShortcut } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { registerAllHandlers } from './ipc'
@@ -24,6 +24,13 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => {
     mainWindow.removeMenu()
     mainWindow.show()
+
+    // F12 切换开发者工具
+    mainWindow.webContents.on('before-input-event', (_event, input) => {
+      if (input.key === 'F12') {
+        mainWindow.webContents.toggleDevTools()
+      }
+    })
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

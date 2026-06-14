@@ -4,7 +4,7 @@ import { existsSync, mkdirSync } from 'fs'
 
 let dataDir = ''
 
-export function getDataDir(): string {
+function getDataDir(): string {
   if (!dataDir) {
     dataDir = join(app.getPath('userData'), 'data')
     if (!existsSync(dataDir)) {

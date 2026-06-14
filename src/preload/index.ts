@@ -35,7 +35,8 @@ const electronAPI = {
     importQuestions: (filePath: string) => ipcRenderer.invoke('data:importQuestions', filePath),
     exportQuestions: (filePath: string, ids?: string[]) =>
       ipcRenderer.invoke('data:exportQuestions', filePath, ids),
-    importExams: (filePath: string) => ipcRenderer.invoke('data:importExams', filePath),
+    importExams: (filePath: string, overwrite?: boolean) =>
+      ipcRenderer.invoke('data:importExams', filePath, overwrite),
     exportExams: (filePath: string, ids?: string[]) =>
       ipcRenderer.invoke('data:exportExams', filePath, ids)
   },

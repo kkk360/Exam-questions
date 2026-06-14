@@ -9,7 +9,9 @@ import {
   Switch,
   Descriptions,
   Row,
-  Col
+  Col,
+  Radio,
+  Tooltip
 } from 'antd'
 import {
   ImportOutlined,
@@ -18,7 +20,13 @@ import {
   SettingOutlined,
   DatabaseOutlined,
   InfoCircleOutlined,
-  BulbOutlined
+  BulbOutlined,
+  PlusCircleOutlined,
+  SyncOutlined,
+  QuestionCircleOutlined,
+  GithubOutlined,
+  MailOutlined,
+  UserOutlined
 } from '@ant-design/icons'
 import type { AppConfig } from '../../types'
 import { useThemeStore } from '../../stores/themeStore'
@@ -28,6 +36,7 @@ const SettingsPage: React.FC = () => {
   const [config, setConfig] = useState<AppConfig | null>(null)
   const [appInfo, setAppInfo] = useState<{ version: string; dataDir: string } | null>(null)
   const { mode, toggleTheme } = useThemeStore()
+  const [importMode, setImportMode] = useState<'append' | 'overwrite'>('append')
 
   useEffect(() => {
     window.electron.system.getConfig().then(setConfig)
@@ -49,12 +58,14 @@ const SettingsPage: React.FC = () => {
         { name: 'JSON文件', extensions: ['json'] }
       ])
       if (!filePath) return
-      const result = await window.electron.data.importExams(filePath)
+      const result = await window.electron.data.importExams(filePath, importMode === 'overwrite')
       if (result.errors.length > 0) {
         message.error(`导入出错：${result.errors.join(', ')}`)
       } else {
         message.success(
-          `成功导入 ${result.success} 份试卷${result.skipped > 0 ? `，跳过 ${result.skipped} 份重复试卷` : ''}`
+          importMode === 'overwrite'
+            ? `成功覆盖导入 ${result.success} 份试卷`
+            : `成功导入 ${result.success} 份试卷${result.skipped > 0 ? `，跳过 ${result.skipped} 份重复试卷` : ''}`
         )
       }
     } catch {
@@ -199,13 +210,43 @@ const SettingsPage: React.FC = () => {
               </Space>
             }
           >
-            <div style={{ display: 'flex', gap: 12 }}>
-              <Button icon={<ImportOutlined />} onClick={handleImportExams} size="large" style={{ flex: 1 }}>
-                导入试卷
-              </Button>
-              <Button icon={<ExportOutlined />} onClick={handleExportExams} size="large" style={{ flex: 1 }}>
-                导出试卷
-              </Button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>导入模式</div>
+                <Radio.Group
+                  value={importMode}
+                  onChange={(e) => setImportMode(e.target.value)}
+                  style={{ display: 'flex', width: '100%' }}
+                  buttonStyle="solid"
+                >
+                  <Radio.Button value="append" style={{ flex: 1, textAlign: 'center' }}>
+                    <Space size={4}>
+                      <PlusCircleOutlined />
+                      <span>追加导入</span>
+                      <Tooltip title="将新试卷添加到现有数据中，跳过已存在的试卷">
+                        <QuestionCircleOutlined style={{ color: 'var(--text-tertiary)' }} />
+                      </Tooltip>
+                    </Space>
+                  </Radio.Button>
+                  <Radio.Button value="overwrite" style={{ flex: 1, textAlign: 'center' }}>
+                    <Space size={4}>
+                      <SyncOutlined />
+                      <span>覆盖导入</span>
+                      <Tooltip title="用导入的试卷完全替换现有数据，现有数据将被清除">
+                        <QuestionCircleOutlined style={{ color: 'var(--text-tertiary)' }} />
+                      </Tooltip>
+                    </Space>
+                  </Radio.Button>
+                </Radio.Group>
+              </div>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <Button icon={<ImportOutlined />} onClick={handleImportExams} size="large" style={{ flex: 1 }}>
+                  导入试卷
+                </Button>
+                <Button icon={<ExportOutlined />} onClick={handleExportExams} size="large" style={{ flex: 1 }}>
+                  导出所有
+                </Button>
+              </div>
             </div>
           </Card>
         </Col>
@@ -257,6 +298,30 @@ const SettingsPage: React.FC = () => {
               >
                 <Descriptions.Item label="版本号">
                   {appInfo?.version || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label="作者">
+                  <Space size={4}>
+                    <UserOutlined style={{ color: 'var(--text-tertiary)' }} />
+                    <span>wangkai</span>
+                  </Space>
+                </Descriptions.Item>
+                <Descriptions.Item label="邮箱">
+                  <Space size={4}>
+                    <MailOutlined style={{ color: 'var(--text-tertiary)' }} />
+                    <a href="mailto:wangkaicode@foxmail.com">wangkaicode@foxmail.com</a>
+                  </Space>
+                </Descriptions.Item>
+                <Descriptions.Item label="GitHub">
+                  <Space size={4}>
+                    <GithubOutlined style={{ color: 'var(--text-tertiary)' }} />
+                    <a
+                      href="https://github.com/kkk360/Exam-questions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      github.com/kkk360/Exam-questions
+                    </a>
+                  </Space>
                 </Descriptions.Item>
                 <Descriptions.Item label="数据目录">
                   <Space direction="vertical" size={2}>

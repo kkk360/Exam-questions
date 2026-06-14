@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import { getQuestions, saveQuestions, type Question } from '../storage/store'
 
-export interface QuestionFilters {
+interface QuestionFilters {
   type?: string
   subject?: string
   difficulty?: number

@@ -22,7 +22,8 @@ import {
   FileTextOutlined,
   ClockCircleOutlined,
   TrophyOutlined,
-  DashboardOutlined
+  DashboardOutlined,
+  ExportOutlined
 } from '@ant-design/icons'
 import { useExamStore } from '../../stores/examStore'
 import type { ExamPaper } from '../../types'
@@ -86,6 +87,19 @@ const ExamList: React.FC = () => {
     }
   }
 
+  const handleExportJson = async (exam: ExamPaper) => {
+    try {
+      const filePath = await window.electron.export.showSaveDialog(`${exam.title}.json`, [
+        { name: 'JSON文件', extensions: ['json'] }
+      ])
+      if (!filePath) return
+      await window.electron.data.exportExams(filePath, [exam.id])
+      message.success('试卷导出成功')
+    } catch {
+      message.error('导出失败')
+    }
+  }
+
   const totalExams = exams.length
   const totalQuestions = exams.reduce((s, e) => s + e.sections.reduce((s2, sec) => s2 + sec.questions.length, 0), 0)
 
@@ -98,9 +112,11 @@ const ExamList: React.FC = () => {
             创建和管理您的试卷
           </div>
         </div>
-        <Button type="primary" icon={<PlusOutlined />} size="large" onClick={() => navigate('/exams/new')}>
-          新建试卷
-        </Button>
+        <Space>
+          <Button type="primary" icon={<PlusOutlined />} size="large" onClick={() => navigate('/exams/new')}>
+            新建试卷
+          </Button>
+        </Space>
       </div>
 
       {exams.length > 0 && (
@@ -134,7 +150,7 @@ const ExamList: React.FC = () => {
       ) : (
         <Row gutter={[16, 16]}>
           {exams.map((exam) => (
-            <Col key={exam.id} xs={24} sm={12} lg={8} xl={6}>
+            <Col key={exam.id} xs={24} sm={12} lg={8} xl={8}>
               <Card
                 hoverable
                 style={{
@@ -256,6 +272,16 @@ const ExamList: React.FC = () => {
                       }}
                     >
                       Word
+                    </Button>
+                    <Button
+                      size="small"
+                      icon={<ExportOutlined />}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleExportJson(exam)
+                      }}
+                    >
+                      导出
                     </Button>
                   </Space>
                 </div>

@@ -6,7 +6,6 @@ import {
   QUESTION_TYPE_LABELS,
   QUESTION_TYPE_COLORS,
   DIFFICULTY_LABELS,
-  type Question,
   type QuestionFilters
 } from '../../types'
 

@@ -1,5 +1,4 @@
 import { BrowserWindow } from 'electron'
-import { join } from 'path'
 import { readFileSync, writeFileSync } from 'fs'
 import katex from 'katex'
 import { getExamWithQuestions } from './exam.service'

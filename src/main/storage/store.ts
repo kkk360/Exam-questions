@@ -249,12 +249,5 @@ export type {
   Question,
   ExamPaper,
   Section,
-  SectionQuestion,
-  PageConfig,
-  AppConfig,
-  QuestionsData,
-  ExamsData,
-  AnswerKey,
-  AnswerKeySection,
-  AnswerKeyItem
+  AnswerKey
 }

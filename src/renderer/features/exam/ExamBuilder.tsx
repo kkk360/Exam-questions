@@ -9,7 +9,6 @@ import {
   App,
   Collapse,
   Radio,
-  Divider,
   Popconfirm
 } from 'antd'
 import {
@@ -227,8 +226,7 @@ const PaperPreview: React.FC<{
   subject: string
   duration: number
   sections: PaperSection[]
-  showAnswerKey: boolean
-}> = ({ title, subtitle, schoolName, subject, duration, sections, showAnswerKey }) => {
+}> = ({ title, subtitle, schoolName, subject, duration, sections }) => {
   const totalScore = sections.reduce(
     (s, sec) => s + sec.questions.reduce((s2, q) => s2 + q.score, 0),
     0
@@ -361,54 +359,6 @@ const PaperPreview: React.FC<{
           })}
         </div>
       ))}
-
-      {showAnswerKey && sections.some((s) => s.questions.length > 0) && (
-        <>
-          <Divider style={{ margin: '24px 0 16px' }} />
-          <h2
-            style={{
-              textAlign: 'center',
-              fontSize: 16,
-              fontFamily: '"SimHei","黑体",sans-serif'
-            }}
-          >
-            参考答案
-          </h2>
-          {sections.map((section) =>
-            section.questions.length > 0 ? (
-              <div key={section.id}>
-                <div style={{ fontWeight: 'bold', fontSize: 13, marginTop: 8 }}>
-                  {section.title}
-                </div>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 2,
-                    fontSize: 12
-                  }}
-                >
-                  {section.questions.map((q, i) => {
-                    let answer = ''
-                    if (q.type === 'single_choice') answer = String(q.correctAnswer)
-                    else if (q.type === 'multiple_choice')
-                      answer = Array.isArray(q.correctAnswer)
-                        ? q.correctAnswer.join('、')
-                        : String(q.correctAnswer)
-                    else if (q.type === 'fill_blank') answer = q.blankAnswers.join(' 或 ')
-                    else answer = '（见解析）'
-                    return (
-                      <div key={q.id}>
-                        <strong>{i + 1}.</strong> {answer}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            ) : null
-          )}
-        </>
-      )}
     </div>
   )
 }
@@ -425,7 +375,6 @@ const ExamBuilder: React.FC = () => {
   const [subject, setSubject] = useState('')
   const [schoolName, setSchoolName] = useState('')
   const [duration, setDuration] = useState(120)
-  const [showAnswerKey, setShowAnswerKey] = useState(true)
   const [sections, setSections] = useState<PaperSection[]>([
     {
       id: genId(),
@@ -459,7 +408,6 @@ const ExamBuilder: React.FC = () => {
         setSubject(exam.subject)
         setSchoolName(exam.schoolName)
         setDuration(exam.duration)
-        setShowAnswerKey(exam.pageConfig.showAnswerKey)
         setSections(
           exam.sections.map((s: any) => ({
             id: s.id,
@@ -610,7 +558,7 @@ const ExamBuilder: React.FC = () => {
         duration,
         totalScore,
         sections: storageSections,
-        pageConfig: { ...defaultPageConfig, showAnswerKey }
+        pageConfig: { ...defaultPageConfig }
       }
       let currentId = examId
       if (currentId) {
@@ -684,7 +632,7 @@ const ExamBuilder: React.FC = () => {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     }
-  }, [title, subtitle, subject, schoolName, duration, showAnswerKey, sections])
+  }, [title, subtitle, subject, schoolName, duration, sections])
 
   const handleSave = async () => {
     if (isSavingRef.current) {
@@ -848,7 +796,6 @@ const ExamBuilder: React.FC = () => {
                 subject={subject}
                 duration={duration}
                 sections={sections}
-                showAnswerKey={showAnswerKey}
               />
             </div>
           </div>

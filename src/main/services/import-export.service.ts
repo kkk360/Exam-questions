@@ -49,7 +49,7 @@ export function exportQuestions(filePath: string, ids?: string[]): void {
   writeFileSync(filePath, data, 'utf-8')
 }
 
-export function importExams(filePath: string): ImportResult {
+export function importExams(filePath: string, overwrite?: boolean): ImportResult {
   try {
     const raw = readFileSync(filePath, 'utf-8')
     const data = JSON.parse(raw)
@@ -59,16 +59,21 @@ export function importExams(filePath: string): ImportResult {
     }
 
     const store = getExams()
-    const existingIds = new Set(store.exams.map((e) => e.id))
     let success = 0
     let skipped = 0
 
-    for (const exam of data.exams) {
-      if (existingIds.has(exam.id)) {
-        skipped++
-      } else {
-        store.exams.push(exam)
-        success++
+    if (overwrite) {
+      store.exams = data.exams
+      success = data.exams.length
+    } else {
+      const existingIds = new Set(store.exams.map((e) => e.id))
+      for (const exam of data.exams) {
+        if (existingIds.has(exam.id)) {
+          skipped++
+        } else {
+          store.exams.push(exam)
+          success++
+        }
       }
     }
 

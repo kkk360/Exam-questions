@@ -105,8 +105,8 @@ export function registerAllHandlers(): void {
     return importExportService.exportQuestions(filePath, ids)
   })
 
-  ipcMain.handle('data:importExams', (_event, filePath: string) => {
-    return importExportService.importExams(filePath)
+  ipcMain.handle('data:importExams', (_event, filePath: string, overwrite?: boolean) => {
+    return importExportService.importExams(filePath, overwrite)
   })
 
   ipcMain.handle('data:exportExams', (_event, filePath: string, ids?: string[]) => {

@@ -3,8 +3,16 @@
   "version": "1.0.0",
   "description": "智能出题系统 - 教师桌面端应用",
   "main": "./out/main/index.js",
-  "author": "",
+  "author": "wangkai <wangkaicode@foxmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kkk360/Exam-questions.git"
+  },
+  "homepage": "https://github.com/kkk360/Exam-questions",
+  "bugs": {
+    "url": "https://github.com/kkk360/Exam-questions/issues"
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",

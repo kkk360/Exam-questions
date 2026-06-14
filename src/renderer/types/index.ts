@@ -37,7 +37,7 @@ export interface ElectronAPI {
   data: {
     importQuestions: (filePath: string) => Promise<ImportResult>
     exportQuestions: (filePath: string, ids?: string[]) => Promise<void>
-    importExams: (filePath: string) => Promise<ImportResult>
+    importExams: (filePath: string, overwrite?: boolean) => Promise<ImportResult>
     exportExams: (filePath: string, ids?: string[]) => Promise<void>
   }
   system: {
@@ -55,18 +55,18 @@ declare global {
   }
 }
 
-export interface FileFilter {
+interface FileFilter {
   name: string
   extensions: string[]
 }
 
-export interface ImportResult {
+interface ImportResult {
   success: number
   skipped: number
   errors: string[]
 }
 
-export interface Option {
+interface Option {
   label: string
   content: string
 }
@@ -103,7 +103,7 @@ export interface Section {
   questions: SectionQuestion[]
 }
 
-export interface PageConfig {
+interface PageConfig {
   pageSize: 'A4' | 'B5' | 'Letter'
   orientation: 'portrait' | 'landscape'
   margins: { top: number; right: number; bottom: number; left: number }
@@ -170,7 +170,7 @@ export const DIFFICULTY_LABELS: Record<number, string> = {
   5: '困难'
 }
 
-export interface AnswerKeyItem {
+interface AnswerKeyItem {
   questionIndex: number
   type: string
   content: string
@@ -178,7 +178,7 @@ export interface AnswerKeyItem {
   explanation: string
 }
 
-export interface AnswerKeySection {
+interface AnswerKeySection {
   title: string
   description: string
   items: AnswerKeyItem[]

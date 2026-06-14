@@ -1,6 +1,5 @@
 import { randomUUID } from 'crypto'
 import { getAnswerKeys, saveAnswerKeys, type AnswerKey } from '../storage/store'
-import { exportToPdf } from './export-pdf.service'
 
 export function listAnswerKeys(): AnswerKey[] {
   return getAnswerKeys().answerKeys.sort(

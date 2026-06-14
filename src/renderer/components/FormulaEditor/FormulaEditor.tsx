@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { Input, Popover, Button, Space, Typography, Tooltip } from 'antd'
 import { FunctionOutlined } from '@ant-design/icons'
 import LaTeXRenderer from '../LaTeXRenderer'
-import { symbolGroups, type SymbolItem } from './SymbolPalette'
+import { symbolGroups } from './SymbolPalette'
 
 const { TextArea } = Input
 const { Text } = Typography

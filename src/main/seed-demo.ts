@@ -1,4 +1,4 @@
-import { getQuestions, getExams, saveQuestions, saveExams } from './storage/store'
+import { getQuestions, saveQuestions, saveExams } from './storage/store'
 import type { Question, ExamPaper } from './storage/store'
 
 function q(overrides: Omit<Question, 'id' | 'createdAt' | 'updatedAt'>): Question {
@@ -19,14 +19,6 @@ function examPaper(overrides: Omit<ExamPaper, 'id' | 'createdAt' | 'updatedAt'>)
     createdAt: now,
     updatedAt: now
   }
-}
-
-const now = Date.now()
-const demoSeed = now - 1000000000
-const baseTime = new Date(demoSeed).toISOString()
-
-function ts(offsetSec: number): string {
-  return new Date(demoSeed + offsetSec * 1000).toISOString()
 }
 
 export function seedDemoData(): void {
@@ -756,6 +748,87 @@ export function seedDemoData(): void {
     })
   )
 
+  // ======================== 演示专用 ========================
+  questions.push(
+    q({
+      type: 'single_choice',
+      subject: '综合',
+      chapter: '逻辑推理',
+      difficulty: 2,
+      content: '下列选项中，与"所有学生都参加了考试"矛盾的是（  ）',
+      options: [
+        { label: 'A', content: '所有学生都没参加考试' },
+        { label: 'B', content: '有些学生参加了考试' },
+        { label: 'C', content: '有些学生没参加考试' },
+        { label: 'D', content: '大部分学生参加了考试' }
+      ],
+      correctAnswer: 'C',
+      blankAnswers: [],
+      explanation:
+        '"所有学生都参加了考试"的矛盾命题是"有些学生没参加考试"。A是反对关系，不是矛盾。',
+      tags: ['逻辑', '命题'],
+      score: 5,
+      contentImages: []
+    })
+  )
+  questions.push(
+    q({
+      type: 'single_choice',
+      subject: '综合',
+      chapter: '数据分析',
+      difficulty: 2,
+      content: '某班50名学生数学成绩的平均分为85分，标准差为10分。若将每个学生的成绩都加上5分，则新的平均分和标准差分别为（  ）',
+      options: [
+        { label: 'A', content: '90分，10分' },
+        { label: 'B', content: '90分，15分' },
+        { label: 'C', content: '85分，10分' },
+        { label: 'D', content: '90分，5分' }
+      ],
+      correctAnswer: 'A',
+      blankAnswers: [],
+      explanation:
+        '每个数据加上常数，平均数增加该常数，标准差不变。新平均分=85+5=90，标准差仍为10。',
+      tags: ['统计', '平均数', '标准差'],
+      score: 5,
+      contentImages: []
+    })
+  )
+  questions.push(
+    q({
+      type: 'fill_blank',
+      subject: '综合',
+      chapter: '数学应用',
+      difficulty: 3,
+      content: '一个长方体的长、宽、高分别为 $3$、$4$、$5$，则其体积为 \\_\\_\\_\\_，表面积为 \\_\\_\\_\\_。',
+      options: [],
+      correctAnswer: [],
+      blankAnswers: ['60', '94'],
+      explanation:
+        '体积 $V=3\\times4\\times5=60$。表面积 $S=2(3\\times4+3\\times5+4\\times5)=2(12+15+20)=94$。',
+      tags: ['几何', '体积', '表面积'],
+      score: 6,
+      contentImages: []
+    })
+  )
+  questions.push(
+    q({
+      type: 'essay',
+      subject: '综合',
+      chapter: '综合分析',
+      difficulty: 4,
+      content:
+        '某学校要举办一场知识竞赛，共有 $3$ 支队伍参加。比赛规则如下：\n每支队伍需要回答 $5$ 道题，答对一题得 $10$ 分，答错不扣分。\n（1）若甲队答对了 $4$ 道题，乙队答对了 $3$ 道题，丙队答对了 $5$ 道题，请计算各队的得分。\n（2）若比赛还设置了抢答题环节，抢答对加 $15$ 分，抢答错扣 $5$ 分。甲队抢答了 $2$ 题，答对 $1$ 题；乙队抢答了 $3$ 题，答对 $2$ 题；丙队没有抢答。请计算最终各队的总分。\n（3）根据最终得分，排出三支队伍的名次。',
+      options: [],
+      correctAnswer: [],
+      blankAnswers: [],
+      explanation:
+        '（1）甲队：$4\\times10=40$ 分；乙队：$3\\times10=30$ 分；丙队：$5\\times10=50$ 分。\n（2）甲队抢答得分：$1\\times15+1\\times(-5)=10$ 分，总分：$40+10=50$ 分；乙队抢答得分：$2\\times15+1\\times(-5)=25$ 分，总分：$30+25=55$ 分；丙队总分：$50$ 分。\n（3）第一名：乙队 $55$ 分；第二名：甲队和丙队并列 $50$ 分。',
+      tags: ['逻辑', '计算', '数据分析'],
+      score: 15,
+      contentImages: []
+    })
+  )
+
   // ======================== 构建试卷 ========================
   saveQuestions({ version: 1, questions })
 
@@ -768,8 +841,51 @@ export function seedDemoData(): void {
   const historyQ = questions.filter((q) => q.subject === '历史')
   const geoQ = questions.filter((q) => q.subject === '地理')
   const politicsQ = questions.filter((q) => q.subject === '政治')
+  const demoQ = questions.filter((q) => q.subject === '综合')
 
   const exams: ExamPaper[] = [
+    examPaper({
+      title: '智能出题系统演示卷',
+      subtitle: '系统功能展示专用',
+      subject: '综合',
+      duration: 60,
+      totalScore: 100,
+      schoolName: '演示学校',
+      sections: [
+        {
+          id: 'demo-sec-' + crypto.randomUUID(),
+          title: '一、选择题',
+          description: '本大题共2小题，每小题5分，共10分。',
+          sortOrder: 0,
+          questions: [
+            { questionId: demoQ[0].id, displayOrder: 0, points: 5 },
+            { questionId: demoQ[1].id, displayOrder: 1, points: 5 }
+          ]
+        },
+        {
+          id: 'demo-sec-' + crypto.randomUUID(),
+          title: '二、填空题',
+          description: '本大题共1小题，共6分。',
+          sortOrder: 1,
+          questions: [{ questionId: demoQ[2].id, displayOrder: 0, points: 6 }]
+        },
+        {
+          id: 'demo-sec-' + crypto.randomUUID(),
+          title: '三、综合题',
+          description: '本大题共1小题，共15分。',
+          sortOrder: 2,
+          questions: [{ questionId: demoQ[3].id, displayOrder: 0, points: 15 }]
+        }
+      ],
+      pageConfig: {
+        pageSize: 'A4',
+        orientation: 'portrait',
+        margins: { top: 20, right: 15, bottom: 20, left: 15 },
+        showAnswerKey: true,
+        showScoreBox: true,
+        headerFontSize: 12
+      }
+    }),
     examPaper({
       title: '高一数学期末测试卷',
       subtitle: '2025-2026学年第二学期',

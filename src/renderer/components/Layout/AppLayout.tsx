@@ -158,11 +158,6 @@ const AppLayout: React.FC = () => {
             </div>
             <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>v1.0.0</div>
           </div>
-          <Tooltip title="帮助">
-            <QuestionCircleOutlined
-              style={{ color: 'var(--text-tertiary)', fontSize: 14, cursor: 'pointer' }}
-            />
-          </Tooltip>
         </div>
       </Sider>
 

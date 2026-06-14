@@ -65,13 +65,13 @@
     },
     "files": [
       "out/**/*",
-      "!node_modules/**/*",
       "!**/*.map",
       "!**/*.ts",
       "!**/*.tsx"
     ],
     "asar": true,
     "compression": "maximum",
+    "forceCodeSigning": false,
     "win": {
       "target": [
         {
@@ -81,7 +81,10 @@
           ]
         }
       ],
-      "icon": "resources/icon.ico"
+      "sign": null,
+      "signtoolOptions": {
+        "signingHashAlgorithms": []
+      }
     },
     "nsis": {
       "oneClick": false,
